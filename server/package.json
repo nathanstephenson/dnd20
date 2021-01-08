@@ -9,5 +9,10 @@
   "author": "",
   "license": "ISC",
   "proxy": "http://localhost:8080",
+  "dependencies": {
+    "apollo-server-express": "^2.19.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
   "description": ""
 }
