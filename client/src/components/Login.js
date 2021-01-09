@@ -1,11 +1,11 @@
 import React from 'react';
 import '../App.css';
 
-function checkUsername() {
+function checkUsername(String) {
 
 }
 
-function checkPassword() {
+function checkPassword(String) {
 
 }
 
@@ -18,7 +18,7 @@ function Login() {
 			<form id="loginform">
 				<label for="user">username </label>
 				<input
-					className="login"
+					className="usernameBox"
 					type="text"
 					name="user"
 					required="true"
@@ -26,7 +26,7 @@ function Login() {
 				></input><br />
 				<label for="pass">password </label>
 				<input
-					className="password"
+					className="passwordBox"
 					type="password"
 					name="pass"
 					required="true"

@@ -4,10 +4,10 @@ const app = express();
 const port = process.env.PORT || 8080;
 const publicPath = path.join(__dirname, '..', 'client');
 const { ApolloServer } = require('apollo-server-express');
-//const { typeDefs, resolvers } = require('./schema');
+const { typeDefs, resolvers } = require('./schema');
 const server = new ApolloServer({
-    //typeDefs,
-    //resolvers,
+    typeDefs,
+    resolvers
 });
 
 server.applyMiddleware({ app });
