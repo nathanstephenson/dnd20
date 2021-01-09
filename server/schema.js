@@ -1,8 +1,9 @@
 const { gql } = require('apollo-server-express');
 
+
 const characters = require('./data/characters');
 const maps = require('./data/maps');
-const campgains = require('./data/campgains');
+const campaigns = require('./data/campaigns');
 const users = require('./data/users');
 
 const typeDefs = gql`
@@ -38,7 +39,7 @@ const typeDefs = gql`
         id: String!
         username: String!
         password: String!
-        access: int!
+        access: int! #have 0 be for users, and 1 be for admin
         campgains: [Campaign]
         characters: [Character]
         maps: [Map]
@@ -56,10 +57,10 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
       users: () => users,
-      campgains: () => campgains,
+      campaigns: () => campaigns,
       maps: () => maps,
       characters: () => characters,
-    },
+    }
 };
 
 module.exports = typeDefs, resolvers;
