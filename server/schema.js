@@ -1,33 +1,32 @@
 const { gql } = require('apollo-server-express');
 
-
+/*
 const characters = require('./data/characters');
 const maps = require('./data/maps');
 const campaigns = require('./data/campaigns');
 const users = require('./data/users');
-
+*/
 const typeDefs = gql`
     
     type Character {
-        id: String!
+        id: ID!
         name: String
         campaign: String
-        #stats, conditions, items, etc. taken from the public 5e API
     }
 
     type Map {
-        id: String!
+        id: ID!
         creator: User!
         campaign: Campaign
         name: String
         entities: [Character]
-        width: int
-        height: int
-        startCell: int
+        width: Int
+        height: Int
+        startCell: Int
     }
 
     type Campaign {
-        id: String!
+        id: ID!
         name: String
         DM: User!
         Characters: [Character]
@@ -36,10 +35,10 @@ const typeDefs = gql`
     }
 
     type User {
-        id: String!
+        id: ID!
         username: String!
         password: String!
-        access: int! #have 0 be for users, and 1 be for admin
+        access: Int!
         campgains: [Campaign]
         characters: [Character]
         maps: [Map]
@@ -53,7 +52,7 @@ const typeDefs = gql`
     }
 
 `;
-
+/*these queries are maybe also not valid
 const resolvers = {
     Query: {
       users: () => users,
@@ -62,5 +61,5 @@ const resolvers = {
       characters: () => characters,
     }
 };
-
-module.exports = typeDefs, resolvers;
+*/
+module.exports = typeDefs;
