@@ -8,7 +8,6 @@ import Login from "../components/Login";
 
 function Home() {
 
-	const baba = fetch('/ping');//want to display this on page just as a test that client is connected to server, it seems to be though
 	const [buttonText, setButtonText] = useState("Next");
 
 	return(

@@ -12,13 +12,9 @@ server.applyMiddleware({ app });
 
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
-/*
-app.use('/', (req, res) => {
+/*this doesnt seem to be doing anything
+app.use('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'))
-});
-
-app.get('/ping', function (req, res) {
-    return res.send({ping: "pong"});
 });
 */
 app.listen(port, () => {
