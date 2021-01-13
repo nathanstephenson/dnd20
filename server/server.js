@@ -5,7 +5,9 @@ const port = process.env.PORT || 8080;
 const publicPath = path.join(__dirname, '..', 'client');
 const { ApolloServer, gql } = require('apollo-server-express');
 const typeDefs = require('./schema');
-
+const MongoClient = require('mongodb').MongoClient;
+const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
+const mongo = new MongoClient(mongouri, { useNewUrlParser: true, useUnifiedTopology: true });
 const server = new ApolloServer({ typeDefs: typeDefs });
 
 server.applyMiddleware({ app });
@@ -20,3 +22,12 @@ app.use('*', (req, res) => {
 app.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });
+
+mongo.connect(err => {
+    const collection = mongo.db("test").collection("devices");
+    // perform actions on the collection object
+    mongo.close();
+});
+
+//line below is how to connect to private db
+//mongo "mongodb+srv://cluster0.g5wfg.mongodb.net/<dbname>" --username dbadmin
