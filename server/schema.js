@@ -1,10 +1,10 @@
 const { gql } = require('apollo-server-express');
 
 /*
-const characters = require('./data/characters');
-const maps = require('./data/maps');
-const campaigns = require('./data/campaigns');
-const users = require('./data/users');
+const characters = require('./datasources/characters');
+const maps = require('./datasources/maps');
+const campaigns = require('./datasources/campaigns');
+const users = require('./datasources/users');
 */
 const typeDefs = gql`
     
@@ -53,7 +53,7 @@ const typeDefs = gql`
 
 `;
 /*these queries are maybe also not valid
-const resolvers = {
+export const resolvers = {
     Query: {
       users: () => users,
       campaigns: () => campaigns,
