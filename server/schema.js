@@ -9,13 +9,13 @@ const users = require('./datasources/users');
 const typeDefs = gql`
     
     type Character {
-        id: ID!
+        _id: ID!
         name: String
         campaign: String
     }
 
     type Map {
-        id: ID!
+        _id: ID!
         creator: User!
         campaign: Campaign
         name: String
@@ -26,7 +26,7 @@ const typeDefs = gql`
     }
 
     type Campaign {
-        id: ID!
+        _id: ID!
         name: String
         DM: User!
         Characters: [Character]
@@ -35,7 +35,7 @@ const typeDefs = gql`
     }
 
     type User {
-        id: ID!
+        _id: ID!
         username: String!
         password: String!
         access: Int!
@@ -52,14 +52,13 @@ const typeDefs = gql`
     }
 
 `;
-/*these queries are maybe also not valid
-export const resolvers = {
+const resolvers = {
     Query: {
       users: () => users,
-      campaigns: () => campaigns,
-      maps: () => maps,
-      characters: () => characters,
+      //campaigns: () => campaigns,
+      //maps: () => maps,
+      //characters: () => characters,
     }
 };
-*/
-module.exports = typeDefs;
+
+module.exports = typeDefs, resolvers;
