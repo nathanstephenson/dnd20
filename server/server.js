@@ -6,9 +6,9 @@ const express = require(`express`);
 const app = express();
 //apollo server and mongodb connection
 const { ApolloServer, gql } = require('apollo-server-express');
-const {typeDefs, resolvers} = require('./schema');
+const {schema} = require('./database/schema');
 const MongoClient = require('mongodb').MongoClient;
-import { Users } from './datasources/users.mjs';
+const Users = require('./database/datasources/users.js').default;
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
 const mongo = new MongoClient(mongouri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -19,10 +19,10 @@ mongo.connect(err => {
     mongo.close();
 });
 
-const server = new ApolloServer({ typeDefs: typeDefs, resolvers: resolvers,
+const server = new ApolloServer({ schema,
     dataSources: () => ({
         users: new Users(mongo.db().collection('users'))
-    }) 
+    })
 });
 //connect the apollo server to express and serve the react app
 server.applyMiddleware({ app });

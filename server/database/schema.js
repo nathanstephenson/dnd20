@@ -1,11 +1,6 @@
-const { gql } = require('apollo-server-express');
+const { gql, makeExecutableSchema } = require('apollo-server-express');
+const resolvers = require('./resolvers')
 
-/*
-const characters = require('./datasources/characters');
-const maps = require('./datasources/maps');
-const campaigns = require('./datasources/campaigns');
-const users = require('./datasources/users');
-*/
 const typeDefs = gql`
     
     type Character {
@@ -38,7 +33,7 @@ const typeDefs = gql`
         _id: ID!
         username: String!
         password: String!
-        access: Int!
+        permissions: Int!
         campgains: [Campaign]
         characters: [Character]
         maps: [Map]
@@ -52,13 +47,6 @@ const typeDefs = gql`
     }
 
 `;
-const resolvers = {
-    Query: {
-      users: () => users,
-      //campaigns: () => campaigns,
-      //maps: () => maps,
-      //characters: () => characters,
-    }
-};
 
-module.exports = typeDefs, resolvers;
+const schema = makeExecutableSchema({typeDefs, resolvers});
+module.exports = schema;
