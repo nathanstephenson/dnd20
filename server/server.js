@@ -6,7 +6,7 @@ const express = require(`express`);
 const app = express();
 //apollo server and mongodb connection
 const { ApolloServer, gql } = require('apollo-server-express');
-const {schema} = require('./database/schema');
+const schema = require('./database/schema');
 const MongoClient = require('mongodb').MongoClient;
 const Users = require('./database/datasources/users.js').default;
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
@@ -21,7 +21,7 @@ mongo.connect(err => {
 
 const server = new ApolloServer({ schema,
     dataSources: () => ({
-        users: new Users(mongo.db().collection('users'))
+        users: new Users(mongo.db("dnd20").collection('users'))
     })
 });
 //connect the apollo server to express and serve the react app
