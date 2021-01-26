@@ -10,4 +10,3 @@ Server:
 	apollo-server-express
 	apollo-datasource-mongodb
 	mongodb
-	graphql (may be included with apollo-server)
