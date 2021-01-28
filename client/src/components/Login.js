@@ -10,23 +10,21 @@ function checkPassword(String) {
 }
 
 function Login() {
-	return (
+	return (//css not working here for the form
 		<header className="App-header">
 			<p>
 				Please enter your username and password
 			</p>
-			<form id="loginform">
-				<label for="user">username </label>
+			<form id="Form">
+				<label for="user">Username: </label>
 				<input
-					className="usernameBox"
 					type="text"
 					name="user"
 					required="true"
 					autoFocus="true"
 				></input><br />
-				<label for="pass">password </label>
+				<label for="pass">Password: </label>
 				<input
-					className="passwordBox"
 					type="password"
 					name="pass"
 					required="true"

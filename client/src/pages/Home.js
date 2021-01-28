@@ -22,7 +22,12 @@ function Home() {
 			</button>
 			<button name="next" variant="outlined">
 				<Link to="/SomePage">
-					Go to Some Page
+					{buttonText}
+				</Link>
+			</button>
+			<button name="next2" variant="outlined">
+				<Link to="Register">
+					Go to registration
 				</Link>
 			</button>
 		</header>

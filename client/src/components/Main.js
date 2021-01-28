@@ -1,9 +1,16 @@
+/**
+ * This is the file that handles routing for the entire application
+ */
+
+
+
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
 import Home from '../pages/Home';
 import SomePage from '../pages/SomePage';
 import SomeOtherPage from '../pages/SomeOtherPage';
+import Register from '../pages/Register';
 
 const Main = () => {
 	return (
@@ -11,6 +18,7 @@ const Main = () => {
 		<Route exact path='/' component={Home}></Route>
 		<Route exact path='/SomePage' component={SomePage}></Route>
 		<Route exact path='/SomeOtherPage' component={SomeOtherPage}></Route>
+		<Route exact path='/Register' component={Register}></Route>
 	</Switch>
 	);
 }
