@@ -48,5 +48,13 @@ const typeDefs = gql`
 
 `;
 
+/*const resolvers = {
+    Query: {
+      allUsers(parent, args) {
+        return User.find({})
+      }
+    }
+  };*/
+
 const schema = makeExecutableSchema({typeDefs});//want to just use default resolvers
 module.exports = schema;

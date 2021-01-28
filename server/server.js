@@ -19,10 +19,11 @@ mongo.connect(err => {
     mongo.close();
 });
 
-const server = new ApolloServer({ schema,
-    dataSources: () => ({
-        users: new Users(mongo.db("dnd20").collection('users'))
-    })
+const server = new ApolloServer({ schema: schema,
+    context: mongo,//connect to mongoose
+    /*dataSources: () => ({//this is for 5eAPI
+        //
+    })*/
 });
 //connect the apollo server to express and serve the react app
 server.applyMiddleware({ app });
