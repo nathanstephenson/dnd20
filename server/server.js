@@ -5,19 +5,13 @@ const publicPath = path.join(__dirname, '..', 'client');
 const express = require(`express`);
 const app = express();
 //apollo server and mongodb connection
-const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServer, gql, makeExecutableSchema } = require('apollo-server-express');
+const Mongoose = require('mongoose');
 const schema = require('./database/schema');
-const MongoClient = require('mongodb').MongoClient;
-const Users = require('./database/datasources/users.js').default;
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
-const mongo = new MongoClient(mongouri, { useNewUrlParser: true, useUnifiedTopology: true });
-
-//connect to mongodb
-mongo.connect(err => {
-    db = mongo.db("dnd20").collection("users");
-    // perform actions on the collection object
-    mongo.close();
-});
+const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+    console.log("connected to mongoDB")
+});//connect to mongoDB with mongoose
 
 const server = new ApolloServer({ schema: schema,
     context: mongo,//connect to mongoose
@@ -39,3 +33,12 @@ app.use('*', (req, res) => {
 app.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });
+
+Mongoose.connection.collection('users').insertOne(
+    {
+        "_id": Mongoose.Types.ObjectId,
+        "name": "nathan",
+        "username": "admin2",
+        "password": "admin2"
+    }
+)

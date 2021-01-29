@@ -31,6 +31,7 @@ const typeDefs = gql`
 
     type User {
         _id: ID!
+        name: String
         username: String!
         password: String!
         permissions: Int!
@@ -40,9 +41,13 @@ const typeDefs = gql`
     }
 
     type Query {
+        user: User
         users: [User]
+        campaign: Campaign
         campgains: [Campaign]
+        map: Map
         maps: [Map]
+        character: Character
         characters: [Character]
     }
 
@@ -56,5 +61,5 @@ const typeDefs = gql`
     }
   };*/
 
-const schema = makeExecutableSchema({typeDefs});//want to just use default resolvers
+const schema = makeExecutableSchema({typeDefs, resolvers});//want to just use default resolvers
 module.exports = schema;

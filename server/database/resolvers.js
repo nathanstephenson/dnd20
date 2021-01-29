@@ -1,10 +1,16 @@
+const User = require('./models/user')
+
 const resolvers = {
     Query: {
-      users: () => users,
-      //campaigns: () => campaigns,
-      //maps: () => maps,
-      //characters: () => characters,
+        user(_id){
+            return User.find({where: _id});
+        }
+    },
+    User: {
+        name(user){
+            return user.name;
+        }
     }
 };
 
-module.exports = resolvers;//not actually in use
+module.exports = resolvers;

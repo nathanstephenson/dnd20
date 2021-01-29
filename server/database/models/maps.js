@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server-express');
-const typeDefs = require('../schema');
+const typeDefs = require('../typeDefs');
 
 const maps = [
     
