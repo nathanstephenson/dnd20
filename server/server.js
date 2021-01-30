@@ -13,8 +13,10 @@ const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopo
     console.log("connected to mongoDB")
 });//connect to mongoDB with mongoose
 
+const User = require('./database/models/user');
+
 const server = new ApolloServer({ schema: schema,
-    context: mongo,//connect to mongoose
+    context: mongo,
     /*dataSources: () => ({//this is for 5eAPI
         //
     })*/
@@ -25,7 +27,7 @@ app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
 /*this doesnt seem to be doing anything
 app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'))
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 */
 
