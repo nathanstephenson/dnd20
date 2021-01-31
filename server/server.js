@@ -35,7 +35,7 @@ app.use('*', (req, res) => {
 app.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });
-
+/*
 Mongoose.connection.collection('users').insertOne(
     {
         "_id": Mongoose.Types.ObjectId,
@@ -43,4 +43,4 @@ Mongoose.connection.collection('users').insertOne(
         "username": "admin2",
         "password": "admin2"
     }
-)
+)*/

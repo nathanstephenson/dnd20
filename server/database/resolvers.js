@@ -1,5 +1,4 @@
 const Mongoose = require('mongoose');
-const { where } = require('./models/user');
 const User = require('./models/user')
 
 const resolvers = {
@@ -7,29 +6,24 @@ const resolvers = {
         users(){
             return User.find();//this works
         },
-        user(args){
+        user(root, args, context){
             return User.find(args);
         }
     },
-    User: {//no work for searching specific names
-        name(user){
-            return User.findOne(User.name == user.name);
-        }
-    },
-    Mutation: {//this doesnt work
-        addUser(root, args, context){
-            User.create({
-                this: User._id = Mongoose.Types.ObjectId,
-                this: User.name = args.name,
-                this: User.username = args.username,
-                this: User.password = args.password,
-                this: User.permissions = 1
+
+    Mutation: {//ValidationError: users validation failed: username: Cast to string failed for value "{ name: 'nathans', username: 'user1', password: 
+                //'user2' }" at path "username", password: Cast to string failed for value "{ _extensionStack: GraphQLExtensionStack { extensions: [] } }" at path "password"
+        addUser(name, username, password){
+            const user = User.create({
+                _id: Mongoose.Types.ObjectId,
+                name: name,
+                username: username,
+                password: password,
+                permissions: 1
             }).then (()=> {
-                Mongoose.connection.collection('users').insertOne(this.User);
-            }).then (()=> {
-                return this.User;
+                return user;
             })
-        }
+        },
     }
 };
 

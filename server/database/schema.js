@@ -33,11 +33,11 @@ const typeDefs = gql`
     }
 
     type User {
-        _id: ID!
+        _id: ID
         name: String
-        username: String!
-        password: String!
-        permissions: Int!
+        username: String
+        password: String
+        permissions: Int
         campgains: [Campaign]
         characters: [Character]
         maps: [Map]
