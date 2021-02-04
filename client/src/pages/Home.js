@@ -3,11 +3,10 @@ import {useState} from 'react';
 import '../App.css';
 import { Link } from "react-router-dom";
 import Login from "../components/Login";
-
-
+import Users from "../components/Users";
 
 function Home() {
-
+	
 	const [buttonText, setButtonText] = useState("Next");
 
 	return(
@@ -17,6 +16,7 @@ function Home() {
 				DnD20
 			</h1>
 			<Login />
+			<Users />
 			<button name="showpong" onClick={() => setButtonText("baba")}>
 				{buttonText}
 			</button>

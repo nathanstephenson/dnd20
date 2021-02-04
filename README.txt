@@ -4,7 +4,7 @@ Client:
 	reac-dom
 	react-router
 	react-sync
-	apollo-client
+	@apollo-client
 Server:
 	express
 	apollo-server-express
