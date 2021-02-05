@@ -14,7 +14,7 @@ function Users() {
 			<p>
 				{users}
 			</p>
-			<button name="showusers" onClick={() => setUsers(JSON.stringify(getusers.users))}>
+			<button name="showusers" onClick={() => setUsers(JSON.stringify(getusers.users[0].username))}>
 				get users
 			</button>
 		</div>

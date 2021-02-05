@@ -6,10 +6,12 @@ import App from './App';
 //import reportWebVitals from './reportWebVitals';
 
 import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
-
+/*
+const PORT = ':8080';
+const HOST = '192.169.0.49';*/
 //create apollo client
 export const apolloClient = new ApolloClient({
-  uri: "http://localhost:8080/graphql",
+  uri: '/graphql',//this is only the extension to the current url to send gql requests to
   cache: new InMemoryCache()
 });
 
