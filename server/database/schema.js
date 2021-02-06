@@ -2,8 +2,6 @@ const { gql, makeExecutableSchema } = require('apollo-server-express');
 const resolvers = require('./resolvers')
 
 
-const Mongoose = require('mongoose');
-
 const typeDefs = gql`
     
     type Character {
@@ -55,10 +53,9 @@ const typeDefs = gql`
     }
 
     type Mutation {
-        addUser(name: String, username:String, password:String): User
+        addUser(name:String, username:String, password:String): User
     }
-
 `;
 
-const schema = makeExecutableSchema({typeDefs, resolvers});//want to just use default resolvers
+const schema = makeExecutableSchema({typeDefs, resolvers});
 module.exports = schema;

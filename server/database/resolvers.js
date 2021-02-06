@@ -7,22 +7,19 @@ const resolvers = {
             return User.find();//this works
         },
         user(root, args, context){
-            return User.find(args);
+            return User.find({args});
         }
     },
 
-    Mutation: {//ValidationError: users validation failed: username: Cast to string failed for value "{ name: 'nathans', username: 'user1', password: 
-                //'user2' }" at path "username", password: Cast to string failed for value "{ _extensionStack: GraphQLExtensionStack { extensions: [] } }" at path "password"
-        addUser(name, username, password){
-            const user = User.create({
-                _id: Mongoose.Types.ObjectId,
-                name: name,
-                username: username,
-                password: password,
+    Mutation: {
+        addUser(root, args, context){//works!
+            User.create({
+                _id: Mongoose.Types.ObjectId(),
+                name: args.name,
+                username: args.username,
+                password: args.password,
                 permissions: 1
-            }).then (()=> {
-                return user;
-            })
+            });
         },
     }
 };
