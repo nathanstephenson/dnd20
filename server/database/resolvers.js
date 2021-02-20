@@ -7,7 +7,7 @@ const resolvers = {
             return User.find();//this works
         },
         user(root, args, context){
-            return User.find({args});
+            return User.findOne({username: args.username});
         }
     },
 
