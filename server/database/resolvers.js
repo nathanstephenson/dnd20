@@ -1,5 +1,5 @@
 const Mongoose = require('mongoose');
-const User = require('./models/user')
+const User = require('./models/user');
 
 const resolvers = {
     Query: {
@@ -7,7 +7,7 @@ const resolvers = {
             return User.find();//this works
         },
         user(root, args, context){
-            return User.findOne({username: args.username});
+            return User.findOne({username: args.username, password: args.password});
         }
     },
 

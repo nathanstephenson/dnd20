@@ -42,7 +42,7 @@ const typeDefs = gql`
     }
 
     type Query {
-        user(name:String, username:String): User
+        user(name:String, username:String, password:String): User
         users: [User]
         campaign: Campaign
         campgains: [Campaign]

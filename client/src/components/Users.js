@@ -2,13 +2,13 @@ import { useQuery } from '@apollo/client';
 import React from 'react';
 import {useState} from 'react';
 import '../App.css';
-import {getUsers} from "../queries"
+import {getUsers, getUser} from "../queries"
 
-function Users() {
+function Users() {//this is to make sure queries work as intended & to debug any gql issues
 	
 	const [users, setUsers] = useState("click the button to get the name of the admin");
 	const getusers = useQuery(getUsers).data;
-	console.log(getusers);
+	const me = useQuery(getUser, {variables: {username:"admin", password:"admin"}}).data;//returns null, idk why
 	return(
 		<div>
 			<p>

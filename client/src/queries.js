@@ -11,8 +11,8 @@ export const getUsers = gql`
   }
 `;
 export const getUser = gql`
-  query getUser($username:String){
-    user(username: $username){
+  query getUser($username:String, $password:String){
+    user(username: $username, password: $password){
       name
       username
       password
