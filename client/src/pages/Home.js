@@ -3,7 +3,6 @@ import {useState} from 'react';
 import '../App.css';
 import { Link } from "react-router-dom";
 import Login from "../components/Login";
-import Users from "../components/Users";
 
 function Home() {
 	
@@ -16,20 +15,14 @@ function Home() {
 				DnD20
 			</h1>
 			<Login />
-			<Users />
 			<button name="showpong" onClick={() => setButtonText("baba")}>
 				{buttonText}
 			</button>
-			<button name="next" variant="outlined">
-				<Link to="/SomePage">
+			<Link to="/SomePage">
+				<button name="next" variant="outlined">
 					{buttonText}
-				</Link>
-			</button>
-			<button name="next2" variant="outlined">
-				<Link to="Register">
-					Go to registration
-				</Link>
-			</button>
+				</button>
+			</Link>
 		</header>
 		)
 }

@@ -19,3 +19,11 @@ export const getUser = gql`
     }
   }
 `;
+
+export const addUser = gql`
+  mutation addUser($name:String, $username:String, $password:String){
+    addUser(name:$name, username:$username, password:$password){
+      name
+    }
+  }
+`;

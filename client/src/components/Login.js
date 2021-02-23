@@ -1,9 +1,8 @@
-
 import React from 'react';
 import '../App.css';
-import {useQuery} from '@apollo/client'
+import {useQuery} from '@apollo/client';
+import {Link} from "react-router-dom";
 import {getUser} from '../queries'
-//import LoginForm from './loginForm'
 
 class Login extends React.Component {
     
@@ -35,7 +34,7 @@ class Login extends React.Component {
         return (
             <div><br/><br/>
                 {!(this.state.loggedIn) && //show login form if not logged in
-                    (<form id="Form" onSubmit={this.handleLoginAttempt}>
+                    (<div><form id="Form" onSubmit={this.handleLoginAttempt}>
                         <p> Please enter your username and password </p>
                         <label htmlFor="user">Username: 
                             <input type="username" name="user" id="user" required={true} autoFocus={true} onChange={this.handleUsernameChange} value={this.state.username}/>
@@ -47,7 +46,13 @@ class Login extends React.Component {
                         <label htmlFor="rememberLogin"> Remember me
                             <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}/>{/*not implemented yet, checkbox doesnt even return anything on submit*/}
                         </label>
-                    </form>)
+                    </form>
+                    <Link to="Register">
+                        <button name="next2" variant="outlined">
+                            register
+                        </button>
+                    </Link>
+                    </div>)
                 }
                 {this.state.loggedIn && <GreetUser username={this.state.username} password={this.state.password}/> /*just an example of what to do once login attempt is made*/}
             <br/><br/></div>
@@ -61,7 +66,7 @@ function GreetUser(props){//retrieves the user based on username and password an
 	while(called && loading){
 		return( <p>Loading...</p> )
 	}
-	if (data.user){//for some reason this comes back null
+	if (data.user){
         return( <p>Hello, {data.user.name}! </p> )
     }else{
         return( <p>user not found</p> )
