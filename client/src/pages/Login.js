@@ -1,21 +1,26 @@
 import React from 'react';
-import '../App.css';
-import {useQuery} from '@apollo/client';
 import {Link} from "react-router-dom";
+import '../App.css';
+import Register from './Register';
+import {useQuery} from '@apollo/client';
 import {getUser} from '../queries'
 
 class Login extends React.Component {
     
     constructor(props) {
         super(props);
+        this.HandleLogin = this.props.HandleLogin;
+        this.SetLogin = this.props.SetLogin;
+        this.Registered = this.Registered.bind(this);
+        this.NotRegistered = this.NotRegistered.bind(this);
         this.handleLoginAttempt = this.handleLoginAttempt.bind(this);
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.state = {loggedIn: false, username: "", password: ""};
+        this.state = {registered:true, loggedIn: false, username: "", password: ""};
     }
 
     handleUsernameChange(e){
-        e.preventDefault();
+        e.preventDefault(); 
         this.setState({username: e.target.value});
         //console.log(this.state.username);
     }
@@ -27,14 +32,23 @@ class Login extends React.Component {
 
     handleLoginAttempt(e){//logs the form
         e.preventDefault();
+        this.HandleLogin(this.state.username, this.state.password);
         this.setState({loggedIn: true});
+    }
+
+    NotRegistered(){
+        this.setState({registered: false});
+    }
+
+    Registered(){
+        this.setState({registered: true});
     }
 
     render() {
         return (
-            <div><br/><br/>
-                {!(this.state.loggedIn) && //show login form if not logged in
-                    (<div><form id="Form" onSubmit={this.handleLoginAttempt}>
+            <header className='App-header'><br/><br/>
+                {(!this.state.loggedIn && this.state.registered) && //show login form if not logged in
+                    (<div><form id="Form" className="Form" onSubmit={this.handleLoginAttempt}>
                         <p> Please enter your username and password </p>
                         <label htmlFor="user">Username: 
                             <input type="username" name="user" id="user" required={true} autoFocus={true} onChange={this.handleUsernameChange} value={this.state.username}/>
@@ -47,22 +61,21 @@ class Login extends React.Component {
                             <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}/>{/*not implemented yet, checkbox doesnt even return anything on submit*/}
                         </label>
                     </form>
-                    <Link to="Register">
-                        <button name="next2" variant="outlined">
+                    <button name="next2" variant="outlined" onClick={this.NotRegistered}>
                             register
-                        </button>
-                    </Link>
+                    </button>
                     </div>)
                 }
-                {this.state.loggedIn && <GreetUser username={this.state.username} password={this.state.password}/> /*just an example of what to do once login attempt is made*/}
-            <br/><br/></div>
+                {(!this.state.registered && !this.state.loggedIn) && <Register Registered={this.Registered}/>}
+                {this.state.loggedIn && <p onClick={this.SetLogin}>Loading...</p>}
+            <br/><br/></header>
         )
     }
 }
-
-function GreetUser(props){//retrieves the user based on username and password and returns a greeting
+//{this.state.loggedIn && <GreetUser username={this.state.username} password={this.state.password}/> /*just an example of what to do once login attempt is made*/}
+/* function GreetUser(props){//retrieves the user based on username and password and returns a greeting
     const {called, loading, data} = useQuery(getUser, {variables:{username: props.username, password: props.password}});
-	console.log(data);
+	//console.log(data);
 	while(called && loading){
 		return( <p>Loading...</p> )
 	}
@@ -71,6 +84,6 @@ function GreetUser(props){//retrieves the user based on username and password an
     }else{
         return( <p>user not found</p> )
     }
-}
+} */
 
 export default Login;

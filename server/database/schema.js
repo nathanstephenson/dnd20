@@ -43,6 +43,7 @@ const typeDefs = gql`
 
     type Query {
         user(name:String, username:String, password:String): User
+        userByID(_id: ID!): User
         users: [User]
         campaign: Campaign
         campgains: [Campaign]

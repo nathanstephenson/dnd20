@@ -3,12 +3,18 @@ const User = require('./models/user');
 
 const resolvers = {
     Query: {
-        users(){
+        users(root, args, context){
+            if(!context.user || !context.user.permissions>=2)
             return User.find();//this works
         },
         user(root, args, context){
+            //if (!context.user) {return null};
             return User.findOne({username: args.username, password: args.password});
-        }
+        },
+        userByID(root, args, context){
+            //if (!context.user) {return null};
+            return User.findOne({_id: args.token});
+        },
     },
 
     Mutation: {

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {useState} from 'react';
 import '../App.css';
 import { Link } from "react-router-dom";
-import Login from "../components/Login";
+import {UserContext} from '../components/Main';
 
 function Home() {
 	
+	const me = useContext(UserContext).user;
 	const [buttonText, setButtonText] = useState("Next");
 
 	return(
@@ -14,8 +15,7 @@ function Home() {
 			<h1 className="title">
 				DnD20
 			</h1>
-			<Login />
-			<button name="showpong" onClick={() => setButtonText("baba")}>
+			<button name="showpong" onClick={() => setButtonText(me.name)}>
 				{buttonText}
 			</button>
 			<Link to="/SomePage">
@@ -24,7 +24,6 @@ function Home() {
 				</button>
 			</Link>
 		</header>
-		)
+	)
 }
-
 export default Home;

@@ -5,7 +5,8 @@ const publicPath = path.join(__dirname, '..', 'client');
 const express = require(`express`);
 const app = express();
 //apollo server and mongodb connection
-const { ApolloServer, gql, makeExecutableSchema } = require('apollo-server-express');
+const { userByID } = require('./database/resolvers');
+const { ApolloServer, gql, makeExecutableSchema, AuthenticationError } = require('apollo-server-express');
 const Mongoose = require('mongoose');
 const schema = require('./database/schema');
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
@@ -13,7 +14,7 @@ const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopo
     console.log("connected to mongoDB")
 });//connect to mongoDB with mongoose
 
-const User = require('./database/models/user');
+
 
 const server = new ApolloServer({ schema: schema,
     context: mongo,
@@ -25,6 +26,13 @@ const server = new ApolloServer({ schema: schema,
 server.applyMiddleware({ app });
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
+/* app.listen(({req}) =>{//taken form apollo page on: auth via http header
+    const token = req.headers.authorization || '';
+    const user = userByID(token);
+    if(!user) {throw new AuthenticationError("you must be logged in")};
+    console.log(user);
+    return {user};
+}); */
 /*this doesnt seem to be doing anything
 app.use('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
@@ -35,12 +43,3 @@ app.use('*', (req, res) => {
 app.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });
-/*
-Mongoose.connection.collection('users').insertOne(
-    {
-        "_id": Mongoose.Types.ObjectId,
-        "name": "nathan",
-        "username": "admin2",
-        "password": "admin2"
-    }
-)*/

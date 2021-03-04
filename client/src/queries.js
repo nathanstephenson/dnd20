@@ -13,6 +13,14 @@ export const getUsers = gql`
 export const getUser = gql`
   query getUser($username:String, $password:String){
     user(username: $username, password: $password){
+      _id
+      name
+    }
+  }
+`;
+export const getUserByID = gql`
+  query getUserByID($_id: String){
+    userByID(_id: $_id){
       name
       username
       password

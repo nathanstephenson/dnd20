@@ -1,14 +1,15 @@
-import React, {state} from 'react';
-import {useMutation} from '@apollo/client'
+import React from 'react';
+import {useQuery, useMutation} from '@apollo/client'
 import '../App.css';
 import { Link } from "react-router-dom";
-import {addUser} from '../queries';
+import {getUser, addUser} from '../queries';
 
 
 
 class Register extends React.Component {
     constructor(props) {
         super(props);
+		this.Registered = this.props.Registered;
 		this.handleNameChange = this.handleNameChange.bind(this);
 		this.handleEmailChange = this.handleEmailChange.bind(this);
 		this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -45,7 +46,7 @@ class Register extends React.Component {
 
     render() {
         return(//obviously needs more added
-            <header className="App-header">
+            <div>
                 {!this.state.registered && 
 					<div>
 						<img src="images/Nooth_DnD.png" width='300' alt="logo"/>
@@ -72,19 +73,29 @@ class Register extends React.Component {
 						Go to some page
 					</button>
 				</Link>
-            </header>
+            </div>
 		)
     }
 }
 
 function AddUser(props){
-	const [newUser, { called:called, loading:loading, error:error }] = useMutation(addUser);
-	newUser({variables:{name:props.name, username:props.username, password:props.password}});//!!!works, but adds 3 entries (and all with a different ID...)
-	while(called && loading){//warning about destructuring, but loading does show
+	const [newUser, { loading, error }] = useMutation(addUser);
+	const {data:queryData} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//check for existing alreadyss
+	console.log(queryData)
+	newUser({variables:{name:props.name, username:props.username, password:props.password}});//!!!works, but adds 3 entries (and all with a different ID...)WHY 3 ENTRIES BUT NOT EVEN ALWAYS
+	if(typeof queryData.user){//apparently here cannot read 'undefined' user, but this same method works in login???
+		}else{
+		return (
+			<div>
+				<p>Error: User already exists, try again</p>
+			</div>
+		);
+	}
+	while(loading){//warning about destructuring, but loading does show
 		return(<p>Loading...</p>);
 	}
-	if(error){//not even sure what error can occur
-		return(<p>An error occurred. ({error.extraInfo})</p>);
+	if(error){
+		return(<p>Some error ocurred</p>);
 	}else{
 		return(
 			<div>
