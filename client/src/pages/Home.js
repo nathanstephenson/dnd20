@@ -6,8 +6,16 @@ import {UserContext} from '../components/Main';
 
 function Home() {
 	
-	const me = useContext(UserContext).user;
+	const me = useContext(UserContext);
 	const [buttonText, setButtonText] = useState("Next");
+
+	function setButtonIfUser(){
+		if(me){
+			setButtonText(me.name);
+		}else{
+			setButtonText("no user")
+		}
+	}
 
 	return(
 		<header className="App-header">
@@ -15,7 +23,7 @@ function Home() {
 			<h1 className="title">
 				DnD20
 			</h1>
-			<button name="showpong" onClick={() => setButtonText(me.name)}>
+			<button name="showpong" onClick={() => setButtonIfUser()}>
 				{buttonText}
 			</button>
 			<Link to="/SomePage">

@@ -36,7 +36,7 @@ class Register extends React.Component {
 
     handleRegisterAttempt(e){
         e.preventDefault();
-		if(!!this.state.name && !!this.state.username && !!this.state.password){
+		if(!!this.state.name && !!this.state.email && !!this.state.username && !!this.state.password){
 			this.setState({registered: true});
 		}else{
 			this.setState({badForm: true})
@@ -57,7 +57,7 @@ class Register extends React.Component {
 							<label htmlFor="fullname" className="tbLabel">Full Name: 
 							<input type="name" id="fullname" name="fullname" required={true} onChange={this.handleNameChange} value={this.state.name}/></label><br/>
 							<label htmlFor="email" className="tbLabel" name="tbLabel">Email: 
-							<input type="email" id="email" name="email" onChange={this.handleEmailChange} value={this.state.email}/></label><br/>
+							<input type="email" id="email" name="email" required={true} onChange={this.handleEmailChange} value={this.state.email}/></label><br/>
 							<label htmlFor="username" className="tbLabel" name="tbLabel">Username: 
 							<input type="username" id="username" name="username" required={true} onChange={this.handleUsernameChange} value={this.state.username}/></label><br/>
 							<label htmlFor="password" className="tbLabel" name="tbLabel">Password: 
@@ -66,7 +66,7 @@ class Register extends React.Component {
 						</form><br/>
 					</div>
 				}
-				{this.state.registered && <AddUser name={this.state.name} username={this.state.username} password={this.state.password}/>}
+				{this.state.registered && <AddUser name={this.state.name} email={this.state.email} username={this.state.username} password={this.state.password}/>}
 				{this.state.badForm && <p>Please make sure all boxes are filled in</p>/**this check seems redundant with the boxes being marked as required */}
 				<Link to="/SomePage">
 					<button name="next" variant="outlined">
@@ -82,7 +82,7 @@ function AddUser(props){
 	const [newUser, { loading, error }] = useMutation(addUser);
 	const {data:queryData} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//check for existing alreadyss
 	console.log(queryData)
-	newUser({variables:{name:props.name, username:props.username, password:props.password}});//!!!works, but adds 3 entries (and all with a different ID...)WHY 3 ENTRIES BUT NOT EVEN ALWAYS
+	newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});//!!!works, but adds 3 entries (and all with a different ID...)WHY 3 ENTRIES BUT NOT EVEN ALWAYS
 	if(typeof queryData.user){//apparently here cannot read 'undefined' user, but this same method works in login???
 		}else{
 		return (

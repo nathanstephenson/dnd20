@@ -5,12 +5,13 @@ import Register from './Register';
 import {useQuery} from '@apollo/client';
 import {getUser} from '../queries'
 
-class Login extends React.Component {
+class Login extends React.Component {//this isn't persistent over refreshes (cached) but i dont really want that rn
     
     constructor(props) {
         super(props);
         this.HandleLogin = this.props.HandleLogin;
         this.SetLogin = this.props.SetLogin;
+        this.BadLogin = this.props.BadLogin;
         this.Registered = this.Registered.bind(this);
         this.NotRegistered = this.NotRegistered.bind(this);
         this.handleLoginAttempt = this.handleLoginAttempt.bind(this);
@@ -34,6 +35,7 @@ class Login extends React.Component {
         e.preventDefault();
         this.HandleLogin(this.state.username, this.state.password);
         this.setState({loggedIn: true});
+        this.SetLogin();
     }
 
     NotRegistered(){
@@ -64,26 +66,13 @@ class Login extends React.Component {
                     <button name="next2" variant="outlined" onClick={this.NotRegistered}>
                             register
                     </button>
+                    {this.BadLogin && <p>Could not find a user to match input username and password.</p>}
                     </div>)
                 }
                 {(!this.state.registered && !this.state.loggedIn) && <Register Registered={this.Registered}/>}
-                {this.state.loggedIn && <p onClick={this.SetLogin}>Loading...</p>}
             <br/><br/></header>
         )
     }
 }
-//{this.state.loggedIn && <GreetUser username={this.state.username} password={this.state.password}/> /*just an example of what to do once login attempt is made*/}
-/* function GreetUser(props){//retrieves the user based on username and password and returns a greeting
-    const {called, loading, data} = useQuery(getUser, {variables:{username: props.username, password: props.password}});
-	//console.log(data);
-	while(called && loading){
-		return( <p>Loading...</p> )
-	}
-	if (data.user){
-        return( <p>Hello, {data.user.name}! </p> )
-    }else{
-        return( <p>user not found</p> )
-    }
-} */
 
 export default Login;
