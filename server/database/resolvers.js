@@ -7,7 +7,7 @@ const resolvers = {
     Query: {
         users(root, args, context){
             //if(!context.user || !context.user.permissions>=2)
-            return User.find();
+            return User.find().populate('campaigns');
         },
         user(root, args, context){
             //if (!context.user) {return null};
@@ -17,6 +17,12 @@ const resolvers = {
             //if (!context.user) {return null};
             return User.findOne({_id: args.token});
         },
+        campaigns(root, args, context){
+            return Campagin.find().populate('characters');
+        },
+        characters(root, args, context){
+            return Character.find();
+        }
     },
 
     Mutation: {
@@ -34,16 +40,16 @@ const resolvers = {
             Campagin.create({
                 _id: Mongoose.Types.ObjectId(),
                 name: args.name,
-                dm: {type: args.dm.id, ref:'users'},
+                dm: Mongoose.Types.ObjectId(args.dm),
             });
         },
         addCharacter(root, args, context){
             Character.create({
                 _id: Mongoose.Types.ObjectId(),
-                user: {type: args.user.id, ref:'users'},
-                campaign: {type: args.campaign.id, ref:'campaigns'},
+                user: Mongoose.Types.ObjectId(args.user),
+                campaign: Mongoose.Types.ObjectId(args.campaign),
                 name: args.name,
-            });
+            }), ()=>{};//need to then add to the user, too. 
         }
     }
 };

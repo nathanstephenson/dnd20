@@ -26,7 +26,7 @@ const typeDefs = gql`
         username: String
         password: String
         permissions: Int
-        campgains: [Campaign]
+        campaigns: [Campaign]
         characters: [Character]
     }
 
@@ -36,7 +36,7 @@ const typeDefs = gql`
         users: [User]
         campaign: Campaign
         campaignByID(_id: ID): Campaign
-        campgains: [Campaign]
+        campaigns: [Campaign]
         character: Character
         characters: [Character]
     }
