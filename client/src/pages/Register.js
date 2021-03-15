@@ -79,11 +79,11 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const [newUser, { loading, error }] = useMutation(addUser);
+	const [newUser, { loading, error }] = useMutation(addUser);//potentially runs twice because of the destructuring?
 	const {data:queryData} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//check for existing alreadyss
 	//console.log(queryData)
 	newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});//!!!works, but adds 3 entries (and all with a different ID...)WHY 3 ENTRIES BUT NOT EVEN ALWAYS
-	if(typeof queryData.user){//apparently here cannot read 'undefined' user, but this same method works in login???
+	if(typeof queryData.user){//apparently here cannot read 'undefined' user, but that same method works in login???
 		}else{
 		return (
 			<div>
