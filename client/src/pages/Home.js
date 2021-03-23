@@ -31,6 +31,11 @@ function Home() {
 					{buttonText}
 				</button>
 			</Link>
+			<Link to="/Campaigns">
+				<button name="next" variant="outlined">
+					Campaigns
+				</button>
+			</Link>
 		</header>
 	)
 }

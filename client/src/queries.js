@@ -22,8 +22,7 @@ export const getUserByID = gql`
   query getUserByID($_id: String){
     userByID(_id: $_id){
       name
-      username
-      password
+      permissions
     }
   }
 `;

@@ -9,7 +9,8 @@ class App extends React.Component {
 		this.LoginUser = this.LoginUser.bind(this);
         this.SetLoggedIn = this.SetLoggedIn.bind(this);
         this.InvalidLogin = this.InvalidLogin.bind(this);
-		this.state = {username:"", password:"", loginError: false, isLoggedIn: false};
+        this.GoodLogin = this.GoodLogin.bind(this);
+		this.state = {username:"", password:"", id:"", loginError: false, isLoggedIn: false};
     }
 
 	LoginUser(username, password){//for some reason this starts performing async and messes the whole thing up
@@ -25,12 +26,16 @@ class App extends React.Component {
         this.setState({loginError: true, isLoggedIn: false}, ()=>{console.log("logged out due to error")});
     }
 
+    GoodLogin(id){
+        this.setState({password:"", id:id, isLoggedIn:false}, ()=>{this.SetLoggedIn()})
+    }
+
     render() {
 
         return (
             <div className="App">
                 {!this.state.isLoggedIn && <Login BadAttempt={this.state.loginError} HandleLogin={this.LoginUser} SetLogin={this.SetLoggedIn}/>}
-                {this.state.isLoggedIn && <Main username={this.state.username} password={this.state.password} BadLogin={this.InvalidLogin}/>}
+                {this.state.isLoggedIn && <Main username={this.state.username} password={this.state.password} id={this.state.id} BadLogin={this.InvalidLogin} GoodLogin={this.GoodLogin}/>}
             </div>
         );
     }
