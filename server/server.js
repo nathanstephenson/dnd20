@@ -13,26 +13,21 @@ const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.
 const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
     console.log("connected to mongoDB")
 });//connect to mongoDB with mongoose
-
+const itemsAPI = require('./database/datasources/itemsAPI')
 
 
 const server = new ApolloServer({ schema: schema,
     context: mongo,
-    /*dataSources: () => ({//this is for 5eAPI
-        //
-    })*/
+    dataSources: () => {//this is for 5eAPI
+        return {
+            itemsAPI: new itemsAPI(),
+        };
+    }
 });
 //connect the apollo server to express and serve the react app
 server.applyMiddleware({ app });
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
-/* app.listen(({req}) =>{//taken form apollo page on: auth via http header
-    const token = req.headers.authorization || '';
-    const user = userByID(token);
-    if(!user) {throw new AuthenticationError("you must be logged in")};
-    console.log(user);
-    return {user};
-}); */
 /*this doesnt seem to be doing anything
 app.use('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));

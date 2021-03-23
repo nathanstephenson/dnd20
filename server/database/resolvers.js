@@ -22,6 +22,13 @@ const resolvers = {
         },
         characters(root, args, context){
             return Character.find();
+        },
+        async equipmentCategories(root, args, {dataSources}){//async because datasource not context
+            return await dataSources.itemsAPI.getCategories();
+        },
+        async equipment(root, args, {dataSources}){
+            console.log(await dataSources.itemsAPI.getItem(args.id))
+            return await dataSources.itemsAPI.getItem(args.id)
         }
     },
 

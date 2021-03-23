@@ -8,5 +8,6 @@ Client:
 Server:
 	express
 	apollo-server-express
-	apollo-datasource-mongodb
+	mongoose
 	mongodb
+	apollo-datasource-rest
