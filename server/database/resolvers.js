@@ -1,5 +1,5 @@
 const Mongoose = require('mongoose');
-const Campagin = require('./models/campaign');
+const Campaign = require('./models/campaign');
 const Character = require('./models/character');
 const User = require('./models/user');
 
@@ -11,14 +11,14 @@ const resolvers = {
         },
         user(root, args, context){
             //if (!context.user) {return null};
-            return User.findOne({username: args.username, password: args.password});
+            return User.findOne({username: args.username, password: args.password}).populate('campaigns');
         },
-        userByID(root, args, context){
+        userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
             //if (!context.user) {return null};
             return User.findOne({_id: args.token});
         },
         campaigns(root, args, context){
-            return Campagin.find().populate('characters');
+            return Campaign.find().populate('characters');
         },
         characters(root, args, context){
             return Character.find();
@@ -44,7 +44,7 @@ const resolvers = {
             });
         },
         addCampaign(root, args, context){
-            Campagin.create({
+            Campaign.create({
                 _id: Mongoose.Types.ObjectId(),
                 name: args.name,
                 dm: Mongoose.Types.ObjectId(args.dm),

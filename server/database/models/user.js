@@ -7,11 +7,11 @@ const userSchema = new Mongoose.Schema({
   username: String,
   password: String,
   permissions: Number,
-  characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'characters' }],
-  campaigns: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'campaigns' }],
+  characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Character' }],
+  campaigns: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Campaign' }],
 });
 
-const User = Mongoose.model('users', userSchema);
+const User = Mongoose.model('User', userSchema);
 
 module.exports = User, userSchema;
 

@@ -4,12 +4,10 @@ import {getUser} from '../queries';
 import '../App.css';
 import PageSwitch from './PageSwitch'
 
-export const UserContext = React.createContext(null);
-
-function Main(props){
+export default function Main(props){
 
 	console.log(props.username, props.password);
-	const {loading, data, error} = useQuery(getUser, {variables:{username: props.username, password: props.password}});//returns null for some reason???, lazy returns undefined
+	const {loading, data, error} = useQuery(getUser, {variables:{username: props.username, password: props.password}});
 	console.log(data);
 	
 	while(loading){
@@ -32,5 +30,4 @@ function Main(props){
 	}
 	return(<p>this happened</p>)
 }
-
-export default Main;
+export const UserContext = React.createContext(null);

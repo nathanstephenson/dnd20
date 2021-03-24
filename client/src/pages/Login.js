@@ -1,9 +1,6 @@
 import React from 'react';
-import {Link} from "react-router-dom";
 import '../App.css';
 import Register from './Register';
-import {useQuery} from '@apollo/client';
-import {getUser} from '../queries'
 
 class Login extends React.Component {//this isn't persistent over refreshes (cached) but i dont really want that rn
     

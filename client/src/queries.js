@@ -15,6 +15,11 @@ export const getUser = gql`
     user(username: $username, password: $password){
       _id
       name
+      campaigns{
+        _id
+        name
+        dm
+      }
     }
   }
 `;

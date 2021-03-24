@@ -7,7 +7,7 @@ const typeDefs = gql`
     
     type Character {
         _id: ID
-        user: User
+        user: ID
         campaign: Campaign
         name: String
     }
@@ -15,8 +15,8 @@ const typeDefs = gql`
     type Campaign {
         _id: ID
         name: String
-        dm: User
-        players: [User]
+        dm: ID
+        players: [ID]
         characters: [Character]
     }
 

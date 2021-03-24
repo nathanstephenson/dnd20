@@ -1,50 +1,48 @@
 import React, { useContext } from 'react';
-import {useState} from 'react';
 import '../App.css';
-import { Link } from "react-router-dom";
-import {UserContext} from '../components/Main';
+import { UserContext } from '../components/Main';
 
-class Campaigns extends React.Component {
+export default class Campaigns extends React.Component {
     constructor(props) {
-        super(props);
-        this.changeSelected = this.changeSelected.bind(this)
+        super(props)
+        this.ChangeSelected = this.ChangeSelected.bind(this)
+        this.ClearSelected = this.ClearSelected.bind(this)
         this.state = {selected:null, chosen:false}
     }
 
-    changeSelected(selected){
+    ChangeSelected(selected){
         this.setState({selected:selected, chosen:true})
     }
 
-    clearSelected(){
+    ClearSelected(){
         this.setState({selected:null, chosen:false})
     }
 
     render() {
-        const me = this.context
-        console.log(me)
+        //const me = this.context
+        //console.log(me)
         return(
             <header className="App-header">
-                {!this.state.chosen && <DisplayCampaigns me={me}/>}
-                {this.state.chosen && <EditCampaign campaign={this.state.selected}/>}
+                {this.state.chosen===false && <DisplayCampaigns me={"me"} changeSelected={this.ChangeSelected}/>}
+                {this.state.chosen===true && <EditCampaign campaign={this.state.selected}/>}
             </header>
         )
     }
 }
 
 function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
-    const currentUser = props.me
-    console.log(currentUser)
+    const currentUser = useContext(UserContext)
+    //console.log(currentUser)
     const campaignList = []
-    for (const campaign in currentUser.campaigns){//adds jsx elemnts to the array
-        campaignList.push(<Campaign campaign={campaign} changeSelected={props.changeSelected}/>)
+    for (let i = 0; i<currentUser.campaigns.length; i++){//adds jsx elemnts to the array
+        campaignList.push(<Campaign campaign={currentUser.campaigns[i]} changeSelected={props.changeSelected}/>)
+        console.log(currentUser.campaigns[i])
     }
     return (
         <div>
             <img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
-            <h1 className="title">
-                Campaigns
-            </h1>
-            <p>These are your campaigns: {JSON.stringify(currentUser.campaigns)}</p>
+            <h1 className="title"> Campaigns </h1>
+            <p>These are your campaigns:</p>
             {campaignList}
         </div>
     )
@@ -58,7 +56,7 @@ function Campaign(props){
                     <p>{props.campaign.name}</p>
                 </ul>
                 <ul className="col2">
-                    <button onClick={props.changeSelected(props.campaign._id)}>
+                    <button /*onClick={props.changeSelected(props.campaign._id)}*/>
                         Edit
                     </button>
                 </ul>
@@ -69,17 +67,23 @@ function Campaign(props){
 
 function EditCampaign(props) {
 	const campaign = props.campaign
-	const me = useContext(UserContext);
     console.log(campaign)
-	return(
-		<header className="App-header">
-			<img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
-			<h1 className="title">
-				Edit "{campaign.name}"
-			</h1>
-		</header>
-	)
+	if(campaign != null){
+        return(
+            <div>
+                <img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
+                <h1 className="title">
+                    Edit "{campaign.name}"
+                </h1>
+            </div>
+        )
+    }else{
+        return (
+            <div>
+                <p>couldn't find campaign</p>
+            </div>
+        )
+    }
 }
 
-Campaigns.contextType = UserContext
-export default Campaigns;
+//Campaigns.contextType = UserContext
