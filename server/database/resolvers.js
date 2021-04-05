@@ -15,20 +15,26 @@ const resolvers = {
         },
         userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
             //if (!context.user) {return null};
-            return User.findOne({_id: args.token});
+            return User.findOne({id:args.id});
         },
         campaigns(root, args, context){
             return Campaign.find().populate('characters');
         },
+        campaign(root, args, context){
+            return Campaign.findOne({id:args.id}).populate('characters');
+        },
         characters(root, args, context){
             return Character.find();
         },
-        async equipmentCategories(root, args, {dataSources}){//async because datasource not context
+        character(root, args, context){
+            return Character.findOne({id:args.id});
+        },
+        async equipmentCategories(root, args, {dataSources}){//async because api returns promise
             return await dataSources.itemsAPI.getCategories();
         },
         async equipment(root, args, {dataSources}){
-            console.log(await dataSources.itemsAPI.getItem(args.id))
-            return await dataSources.itemsAPI.getItem(args.id)
+            console.log(await dataSources.itemsAPI.getEquipment(args.id))
+            return await dataSources.itemsAPI.getEquipment(args.id)
         }
     },
 
@@ -47,17 +53,23 @@ const resolvers = {
             Campaign.create({
                 _id: Mongoose.Types.ObjectId(),
                 name: args.name,
-                dm: Mongoose.Types.ObjectId(args.dm),
+                dm: Mongoose.Types.ObjectId(args.dm._id),
             });
         },
+        renameCampaign(root, args, context){
+            Campaign.updateOne({_id:args.id}, {name:args.name});
+        },
         addCharacter(root, args, context){
+            const newid = Mongoose.Types.ObjectId()
             Character.create({
-                _id: Mongoose.Types.ObjectId(),
-                user: Mongoose.Types.ObjectId(args.user),
-                campaign: Mongoose.Types.ObjectId(args.campaign),
+                _id: newid,
+                user: Mongoose.Types.ObjectId(args.user._id),
+                campaign: Mongoose.Types.ObjectId(args.campaign._id),
                 name: args.name,
-            }), ()=>{};//need to then add to the user, too. 
-        }
+            }), ()=>{
+                //then add the newid to the user's characters
+            };
+        },
     }
 };
 

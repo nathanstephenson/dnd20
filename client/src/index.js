@@ -12,7 +12,7 @@ const HOST = '192.169.0.49';*/
 //create apollo client
 export const apolloClient = new ApolloClient({
   uri: '/graphql',//this is only the extension to the current url to send gql requests to
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 ReactDOM.render(

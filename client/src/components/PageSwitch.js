@@ -12,8 +12,7 @@ import Register from '../pages/Register';
 import Campaigns from '../pages/Campaigns';
 
 function PageSwitch(){
-    Campaigns.contextType = UserContext
-    console.log(UserContext)
+    //Campaigns.contextType = UserContext
     return (
         <Switch> {/* The Switch decides which component to show based on the current URL.*/}
             <Route exact path='/' component={Home}/>

@@ -39,12 +39,12 @@ const typeDefs = gql`
 
     type Query {
         user(name:String, email:String, username:String, password:String): User
-        userByID(_id: ID!): User
+        userByID(id:String): User
         users: [User]
-        campaign: Campaign
-        campaignByID(_id: ID): Campaign
+        campaign(id:String): Campaign
+        campaignByID(id:String): Campaign
         campaigns: [Campaign]
-        character: Character
+        character(id:String): Character
         characters: [Character]
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
@@ -53,6 +53,7 @@ const typeDefs = gql`
     type Mutation {
         addUser(name:String, email:String, username:String, password:String): User
         addCampaign(dm:ID, name:String): Campaign
+        renameCampaign(id:ID, name:String): Campaign
         addCharacter(user:ID, campaign:ID, name:String): Character
     }
 `;

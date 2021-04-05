@@ -39,3 +39,19 @@ export const addUser = gql`
     }
   }
 `;
+
+export const addCampaign = gql`
+  mutation addCampaign($dm:String, $name:String){
+    addCampaign(dm:$dm, name:$name){
+      name
+    }
+  }
+`;
+
+export const renameCampaign = gql`
+  mutation renameCampaign($id:String, $name:String){
+    renameCampaign(id:$id, name:$name){
+      name
+    }
+  }
+`;

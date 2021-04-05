@@ -68,11 +68,9 @@ class Register extends React.Component {
 				}
 				{this.state.registered && <AddUser name={this.state.name} email={this.state.email} username={this.state.username} password={this.state.password}/>}
 				{this.state.badForm && <p>Please make sure all boxes are filled in</p>/**this check seems redundant with the boxes being marked as required */}
-				<Link to="/SomePage">
-					<button name="next" variant="outlined">
-						Go to some page
-					</button>
-				</Link>
+				<button onClick={this.Registered} name="next" variant="outlined">
+					Go back to login
+				</button>
             </div>
 		)
     }
