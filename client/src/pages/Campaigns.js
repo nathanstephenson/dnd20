@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import '../App.css';
 import {useMutation} from '@apollo/client';
-import { UserContext } from '../components/Main';
+import {UserContext} from '../misc/UserContext';
 import EditCampaign from '../components/EditCampaign'
-import {addCampaign, renameCampaign} from '../queries'
+import {addCampaign} from '../queries'
 
 export default class Campaigns extends React.Component {
 
@@ -11,13 +11,15 @@ export default class Campaigns extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {selected:null, chosen:false, wantsNew:false, newName:"", newSubmitted:false, currentUser:this.context}
+        this.state = {selected:null, chosen:false, wantsNew:false, newName:"", newSubmitted:false, needsRefresh:false}
         this.handleEditSubmit = this.handleEditSubmit.bind(this)
         this.changeSelected = this.changeSelected.bind(this)
         this.clearSelected = this.clearSelected.bind(this)
         this.wantsNew = this.wantsNew.bind(this)
         this.newSubmitted = this.newSubmitted.bind(this)
         this.newNameChanged = this.newNameChanged.bind(this)
+        this.resetWithNew = this.resetWithNew.bind(this)
+        this.refreshed = this.refreshed.bind(this)
     }
 
     handleEditSubmit(e){
@@ -28,8 +30,8 @@ export default class Campaigns extends React.Component {
         this.setState({selected:selected, chosen:true})
     }
 
-    clearSelected(){
-        this.setState({selected:null, chosen:false})
+    clearSelected(){//need to update context
+        this.setState({selected:null, chosen:false, needsRefresh:true})
     }
 
     newNameChanged(e){
@@ -43,44 +45,50 @@ export default class Campaigns extends React.Component {
         e.preventDefault()
         this.setState({newSubmitted:true})
     }
-    resetNew(e){
-        this.setState({wantsNew:false, newSubmitted:false, newName:""})
+    resetWithNew(newID){
+        this.setState({wantsNew:false, newSubmitted:false, newName:""}, ()=>{this.changeSelected(newID)})
+    }
+    refreshed(){
+        this.setState({needsRefresh:false})
     }
 
     render() {
-        const user = this.context
+        const {user} = this.context
         return(
             <header className="App-header">
-                {this.state.chosen===false && <DisplayCampaigns me={"me"} changeSelected={this.changeSelected}/>}
-                {this.state.chosen===false && <div>
+                {!this.state.chosen && <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>}
+                {!this.state.chosen && <div>
                     {(!this.state.wantsNew && !this.state.newSubmitted) && <button onClick={this.wantsNew}>New Campaign</button>}
                     {(this.state.wantsNew && !this.state.newSubmitted) && <form className="Form" onSubmit={this.newSubmitted}>
                         <label htmlFor="name" className="tbLabel">Campaign Name: 
                         <input type="name" id="name" name="name" required={true} onChange={this.newNameChanged}/></label>
                         <input type="submit" value="Submit"/>
                     </form>}
-                    {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetNew}/>}
+                    {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetWithNew}/>}
                 </div>}
-                {this.state.chosen===true && <EditCampaign campaign={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
+                {this.state.chosen && <EditCampaign currentUserID={user._id} campaignID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
             </header>
         )
     }
 }
 
 function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
-    const currentUser = useContext(UserContext)
-    //console.log(currentUser)
+    const {user, refreshUser} = useContext(UserContext)
+    if(props.needsRefresh){
+        refreshUser()
+        props.refreshed()
+    }
     const campaignList = []
-    for (let i = 0; i<currentUser.campaigns.length; i++){//adds jsx elemnts to the array
-        campaignList.push(<Campaign campaign={currentUser.campaigns[i]} changeSelected={props.changeSelected}/>)
-        //console.log(currentUser.campaigns[i])
+    campaignList.push(<p>These are your campaigns:</p>)
+    for (let i = 0; i<user.campaigns.length; i++){//adds jsx elemnts to the array
+        campaignList.push(<Campaign campaign={user.campaigns[i]} changeSelected={props.changeSelected}/>)
     }
     return (
         <div>
             <img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
             <h1 className="title"> Campaigns </h1>
-            <p>These are your campaigns:</p>
-            {campaignList}
+            {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
+            {(user.campaigns.length!==0) && campaignList}
         </div>
     )
 }
@@ -93,7 +101,7 @@ function Campaign(props){
                     <p>{props.campaign.name}</p>
                 </li>
                 <li className="col2">
-                    <button onClick={() => props.changeSelected(props.campaign)}>
+                    <button onClick={() => props.changeSelected(props.campaign._id)}>
                         Edit
                     </button>
                 </li>
@@ -102,22 +110,19 @@ function Campaign(props){
     )
 }
 
-function AddCampaign(props){
-    const currentUser = useContext(UserContext)
-    console.log(currentUser)
-    const [newCampaign, { loading, error }] = useMutation(addCampaign);//potentially runs twice because of the destructuring?
-    newCampaign({variables:{dm:props.dm, id:props.name}})
-	while(loading){//warning about destructuring, but loading does show
+function AddCampaign(props){//here we just pray that no 2 campaigns have the same id (unlikely as it is 24-char hex)
+    console.log("adding")
+    const {user:currentUser} = useContext(UserContext)
+    const [newCampaign, { data, loading, error }] = useMutation(addCampaign);//this method means it only gets added once
+	while(loading){
 		return(<p>Loading...</p>);
 	}
-	if(error){
-		return(<p>Some error ocurred ({error})</p>);
-	}else{
-        props.handleAdded()
-		return(
-			<div>
-				<p>done</p>
-			</div>
-		);
-	}
+    if(data===undefined){
+        newCampaign({variables:{dm:currentUser._id, name:props.name}})
+        console.log('attempted addCampaign')
+    }else if(data != null){
+        console.log('done', data)
+        props.handleAdded(data.addCampaign._id)
+    }
+    return null
 }

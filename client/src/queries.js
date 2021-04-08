@@ -40,11 +40,35 @@ export const addUser = gql`
   }
 `;
 
+export const getCampaignID = gql`
+  query getCampaignID($name:String){
+    campaign(name:$name){
+      _id
+    }
+  }
+`;
+
+
+export const getCampaign = gql`
+  query getCampaign($id:String){
+    campaign(id:$id){
+      name
+      dm
+    }
+  }
+`;
+
 export const addCampaign = gql`
   mutation addCampaign($dm:String, $name:String){
     addCampaign(dm:$dm, name:$name){
-      name
+      _id
     }
+  }
+`;
+
+export const deleteCampaign = gql`
+  mutation deleteCampaign($user:String, $dm:String, $campaign:String){
+    deleteCampaign(user:$user, dm:$dm, campaign:$campaign)
   }
 `;
 
@@ -52,6 +76,21 @@ export const renameCampaign = gql`
   mutation renameCampaign($id:String, $name:String){
     renameCampaign(id:$id, name:$name){
       name
+    }
+  }
+`;
+
+export const currentUser = gql`
+  subscription currentUser($id:String){
+    updateUser(id:$id){
+      _id
+      name
+      permissions
+      campaigns{
+        _id
+        name
+        dm
+      }
     }
   }
 `;

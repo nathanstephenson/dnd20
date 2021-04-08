@@ -4,15 +4,13 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import '../App.css';
-import {UserContext} from './Main'
 import Home from '../pages/Home';
 import SomePage from '../pages/SomePage';
 import SomeOtherPage from '../pages/SomeOtherPage';
 import Register from '../pages/Register';
 import Campaigns from '../pages/Campaigns';
 
-function PageSwitch(){
-    //Campaigns.contextType = UserContext
+function PageSwitch(props){
     return (
         <Switch> {/* The Switch decides which component to show based on the current URL.*/}
             <Route exact path='/' component={Home}/>

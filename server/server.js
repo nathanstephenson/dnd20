@@ -5,9 +5,9 @@ const publicPath = path.join(__dirname, '..', 'client');
 const express = require(`express`);
 const app = express();
 //apollo server and mongodb connection
-const { userByID } = require('./database/resolvers');
 const { ApolloServer, gql, makeExecutableSchema, AuthenticationError } = require('apollo-server-express');
 const Mongoose = require('mongoose');
+Mongoose.set('useFindAndModify', false);
 const schema = require('./database/schema');
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
 const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
@@ -22,7 +22,8 @@ const server = new ApolloServer({ schema: schema,
         return {
             itemsAPI: new itemsAPI(),
         };
-    }
+    },
+    tracing: true,
 });
 //connect the apollo server to express and serve the react app
 server.applyMiddleware({ app });

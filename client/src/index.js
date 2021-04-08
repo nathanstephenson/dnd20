@@ -13,6 +13,10 @@ const HOST = '192.169.0.49';*/
 export const apolloClient = new ApolloClient({
   uri: '/graphql',//this is only the extension to the current url to send gql requests to
   cache: new InMemoryCache(),
+  onError: ({ networkError, graphQLErrors }) => {
+    console.log('graphQLErrors', graphQLErrors)
+    console.log('networkError', networkError)
+  },
 });
 
 ReactDOM.render(

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import {useState} from 'react';
 import '../App.css';
 import { Link } from "react-router-dom";
-import {UserContext} from '../components/Main';
+import {UserContext} from '../misc/UserContext';
 
 function Home() {
 	
