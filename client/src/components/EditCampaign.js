@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import '../App.css';
+import {UserContext} from '../misc/UserContext'
 import {useMutation, useQuery} from '@apollo/client'
-import {getCampaign, renameCampaign} from '../queries'
+import {getCampaign, renameCampaign, deleteCampaign} from '../queries'
 
 export default class EditCampaign extends React.Component {
     constructor(props) {
@@ -9,9 +10,10 @@ export default class EditCampaign extends React.Component {
         this.campaignID = this.props.campaignID
         this.handleNameChange = this.handleNameChange.bind(this)
         this.submit = this.submit.bind(this)
+        this.delete = this.delete.bind(this)
         this.submitted = this.submitted.bind(this)
         this.returnCampaign = this.returnCampaign.bind(this)
-        this.state = {submit:false, loaded:false, campaign:null, name:""}
+        this.state = {submit:false, delete:false, loaded:false, campaign:null, name:""}
     }
 
     handleNameChange(e){
@@ -24,8 +26,12 @@ export default class EditCampaign extends React.Component {
         this.props.submit(e)
     }
 
+    delete(){
+        this.setState({delete:true})
+    }
+
     submitted(){
-        this.setState({submit:false}, ()=>{this.props.back()})
+        this.setState({submit:false, delete:false}, ()=>{this.props.back()})
     }
 
     returnCampaign(campaign){
@@ -48,6 +54,7 @@ export default class EditCampaign extends React.Component {
                         <h1 className="title">
                             Edit Campaign
                         </h1>
+                        <button onClick={this.delete}>Delete this campaign</button>
                         <form className="Form" onSubmit={this.submit}>
                             {isDM && <div><label htmlFor="name" className="tbLabel">Campaign Name: 
                             <input type="name" id="name" name="name" required={true} onChange={this.handleNameChange} value={this.state.name}/></label><br/></div>}
@@ -55,6 +62,7 @@ export default class EditCampaign extends React.Component {
                         </form><br/>
                     </div>}
                     {this.state.submit && <SubmitCampaign submitted={this.submitted} id={this.campaignID} name={this.state.name}/>}
+                    {this.state.delete && <DeleteCampaign submitted={this.submitted} dm={this.state.campaign.dm} campaignID={this.campaignID}/>}
                     <button onClick={this.props.back}>Go Back</button>
                 </div>
             )
@@ -91,6 +99,22 @@ function SubmitCampaign(props){
         submitCampaign({variables:{id:props.id, name:props.name}})
     }else{
         console.log(data)
+        props.submitted()
+    }
+    return null
+}
+
+function DeleteCampaign(props){
+    const {user:currentUser} = useContext(UserContext)
+    const [delCampaign, { data, loading }] = useMutation(deleteCampaign);//this method means it only gets added once
+	while(loading){
+		return(<p>Loading...</p>);
+	}
+    if(data===undefined){
+        delCampaign({variables:{user:currentUser._id, dm:props.dm, campaign:props.campaignID}})
+        console.log('attempted deleteCampaign')
+    }else if(data != null){
+        console.log('done', data)
         props.submitted()
     }
     return null

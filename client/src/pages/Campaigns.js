@@ -3,7 +3,7 @@ import '../App.css';
 import {useMutation} from '@apollo/client';
 import {UserContext} from '../misc/UserContext';
 import EditCampaign from '../components/EditCampaign'
-import {addCampaign} from '../queries'
+import {addCampaign, deleteCampaign} from '../queries'
 
 export default class Campaigns extends React.Component {
 
@@ -113,7 +113,7 @@ function Campaign(props){
 function AddCampaign(props){//here we just pray that no 2 campaigns have the same id (unlikely as it is 24-char hex)
     console.log("adding")
     const {user:currentUser} = useContext(UserContext)
-    const [newCampaign, { data, loading, error }] = useMutation(addCampaign);//this method means it only gets added once
+    const [newCampaign, { data, loading }] = useMutation(addCampaign);//this method means it only gets added once
 	while(loading){
 		return(<p>Loading...</p>);
 	}
