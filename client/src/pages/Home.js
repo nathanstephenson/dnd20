@@ -6,7 +6,7 @@ import {UserContext} from '../misc/UserContext';
 
 function Home() {
 	
-	const me = useContext(UserContext);
+	const {user:me} = useContext(UserContext);
 	const [buttonText, setButtonText] = useState("Next");
 
 	function setButtonIfUser(){
@@ -18,7 +18,7 @@ function Home() {
 	}
 
 	return(
-		<header className="App-header">
+		<>
 			<img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
 			<h1 className="title">
 				DnD20
@@ -26,17 +26,7 @@ function Home() {
 			<button name="showpong" onClick={() => setButtonIfUser()}>
 				{buttonText}
 			</button>
-			<Link to="/SomePage">
-				<button name="next" variant="outlined">
-					{buttonText}
-				</button>
-			</Link>
-			<Link to="/Campaigns">
-				<button name="next" variant="outlined">
-					Campaigns
-				</button>
-			</Link>
-		</header>
+		</>
 	)
 }
 export default Home;

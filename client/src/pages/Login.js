@@ -45,7 +45,7 @@ class Login extends React.Component {//this isn't persistent over refreshes (cac
 
     render() {
         return (
-            <header className='App-header'><br/><br/>
+            <header className="App-header">
                 {(!this.state.loggedIn && this.state.registered) && //show login form if not logged in
                     (<div><form id="Form" className="Form" onSubmit={this.handleLoginAttempt}>
                         <p> Please enter your username and password </p>
@@ -67,7 +67,7 @@ class Login extends React.Component {//this isn't persistent over refreshes (cac
                     </div>)
                 }
                 {(!this.state.registered && !this.state.loggedIn) && <Register Registered={this.Registered}/>}
-            <br/><br/></header>
+            </header>
         )
     }
 }

@@ -3,7 +3,7 @@ import '../App.css';
 import {useMutation} from '@apollo/client';
 import {UserContext} from '../misc/UserContext';
 import EditCampaign from '../components/EditCampaign'
-import {addCampaign, deleteCampaign} from '../queries'
+import {addCampaign} from '../queries'
 
 export default class Campaigns extends React.Component {
 
@@ -55,7 +55,7 @@ export default class Campaigns extends React.Component {
     render() {
         const {user} = this.context
         return(
-            <header className="App-header">
+            <>
                 {!this.state.chosen && <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>}
                 {!this.state.chosen && <div>
                     {(!this.state.wantsNew && !this.state.newSubmitted) && <button onClick={this.wantsNew}>New Campaign</button>}
@@ -67,7 +67,7 @@ export default class Campaigns extends React.Component {
                     {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetWithNew}/>}
                 </div>}
                 {this.state.chosen && <EditCampaign currentUserID={user._id} campaignID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
-            </header>
+            </>
         )
     }
 }
@@ -79,34 +79,31 @@ function DisplayCampaigns(props){//need to render the Campaign function for as m
         props.refreshed()
     }
     const campaignList = []
-    campaignList.push(<p>These are your campaigns:</p>)
+    campaignList.push(<h2>These are your campaigns:</h2>)
     for (let i = 0; i<user.campaigns.length; i++){//adds jsx elemnts to the array
         campaignList.push(<Campaign campaign={user.campaigns[i]} changeSelected={props.changeSelected}/>)
     }
     return (
-        <div>
-            <img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
+        <>
             <h1 className="title"> Campaigns </h1>
             {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
             {(user.campaigns.length!==0) && campaignList}
-        </div>
+        </>
     )
 }
 
 function Campaign(props){
     return (
-        <div>
-            <ul className="campaign">
-                <li className="col1">
-                    <p>{props.campaign.name}</p>
-                </li>
-                <li className="col2">
-                    <button onClick={() => props.changeSelected(props.campaign._id)}>
-                        Edit
-                    </button>
-                </li>
-            </ul>
-        </div>
+        <ul className="campaign">
+            <li key="c1" className="campaign_name">
+                <p>{props.campaign.name}</p>
+            </li>
+            <li key="c2"><ul><li>
+                <button onClick={() => props.changeSelected(props.campaign._id)}>
+                    Edit
+                </button>
+            </li></ul></li>
+        </ul>
     )
 }
 

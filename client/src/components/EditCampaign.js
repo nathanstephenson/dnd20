@@ -46,7 +46,7 @@ export default class EditCampaign extends React.Component {
                 isDM = (this.props.currentUserID===this.state.campaign.dm)
             }
             return(//also need to add characters/users +/-
-                <div>
+                <>
                     {(!this.state.loaded && !this.state.submit) && <div>
                         <LoadCampaign ID={this.campaignID} return={this.returnCampaign}/>
                     </div>}
@@ -64,7 +64,7 @@ export default class EditCampaign extends React.Component {
                     {this.state.submit && <SubmitCampaign submitted={this.submitted} id={this.campaignID} name={this.state.name}/>}
                     {this.state.delete && <DeleteCampaign submitted={this.submitted} dm={this.state.campaign.dm} campaignID={this.campaignID}/>}
                     <button onClick={this.props.back}>Go Back</button>
-                </div>
+                </>
             )
         }else{
             return (

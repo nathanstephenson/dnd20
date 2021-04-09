@@ -55,7 +55,7 @@ export default class Campaigns extends React.Component {
     render() {
         const {user} = this.context
         return(
-            <header className="App-header">
+            <>
                 {!this.state.chosen && <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>}
                 {!this.state.chosen && <div>
                     {(!this.state.wantsNew && !this.state.newSubmitted) && <button onClick={this.wantsNew}>New Campaign</button>}
@@ -67,7 +67,7 @@ export default class Campaigns extends React.Component {
                     {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetWithNew}/>}
                 </div>}
                 {this.state.chosen && <EditCampaign currentUserID={user._id} campaignID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
-            </header>
+            </>
         )
     }
 }
