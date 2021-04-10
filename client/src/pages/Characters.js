@@ -112,7 +112,7 @@ function Campaign(props){
 
 function AddCampaign(props){//here we just pray that no 2 campaigns have the same id (unlikely as it is 24-char hex)
     const {user:currentUser} = useContext(UserContext)
-    const [newCampaign, { data, loading, error }] = useMutation(addCampaign);//this method means it only gets added once
+    const [newCampaign, { data, loading }] = useMutation(addCampaign);//this method means it only gets added once
 	while(loading){
 		return(<p>Loading...</p>);
 	}

@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import {useState} from 'react';
 import '../App.css';
-import { Link } from "react-router-dom";
 import {UserContext} from '../misc/UserContext';
 
 function Home() {
@@ -19,13 +18,16 @@ function Home() {
 
 	return(
 		<>
+			<br/>
 			<img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
+			<br/>
 			<h1 className="title">
 				DnD20
 			</h1>
 			<button name="showpong" onClick={() => setButtonIfUser()}>
 				{buttonText}
 			</button>
+			<p>welcome to the app, gamer</p>
 		</>
 	)
 }

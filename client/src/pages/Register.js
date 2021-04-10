@@ -77,33 +77,34 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const [newUser, { data, loading, error }] = useMutation(addUser);//potentially runs twice because of the destructuring?
-	const {data:queryData} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//check for existing alreadyss
-	//console.log(queryData)
-	if(queryData != null){//apparently here cannot read 'undefined' user, but that same method works in login???
-		if(data===null){
-			newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});
+	const {data:queryData, loading:queryLoading} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//looking for existing user
+	const [newUser, { data, loading }] = useMutation(addUser);
+	while(queryLoading){
+		return(<p>Checking for existing user...</p>)
+	}
+	if(queryData.user===null){//apparently here cannot read 'undefined' user, but that same method works in login???
+		console.log("user doesn't already exist")
+		while(loading){//warning about destructuring, but loading does show
+			return(<p>Loading...</p>);
 		}
-	}else{
+		if(data===undefined){
+			console.log("adding user")
+			newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});
+		}else if(data!=null){
+			console.log(data)
+			return(
+				<>
+					<p>Welcome, {props.name}</p>
+					<Link to="">
+						Go to Log In
+					</Link>
+				</>
+			);
+		}
+	}if(queryData!==null){
+		console.log("user already exists", queryData, data)
 		return (
 			<p>Error: User already exists, try again</p>
-		);
-	}
-	while(loading){//warning about destructuring, but loading does show
-		return(<p>Loading...</p>);
-	}
-	if(error){
-		return(<p>Some error ocurred</p>);
-	}else{
-		return(
-			<div>
-				<p>Welcome, {props.name}</p>
-				<Link to="">
-					<button>
-						Log In
-					</button>
-				</Link>
-			</div>
 		);
 	}
 }

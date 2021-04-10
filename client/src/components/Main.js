@@ -3,6 +3,7 @@ import {NetworkStatus, useQuery} from '@apollo/client';
 import {UserContext} from '../misc/UserContext'
 import {getUser} from '../queries';
 import '../App.css';
+import NavBar from './navbar'
 import PageSwitch from './PageSwitch'
 
 
@@ -13,10 +14,10 @@ export default function Main(props){
 	console.log("Logged in user", data);
 	
 	while(networkStatus===NetworkStatus.refetch){
-		return (<header><p>Retrieving your data...</p></header>)
+		return (<><NavBar currentUser={data.user}/><header><p>Retrieving your data...</p></header></>)
 	}
 	while(loading){
-		return (<header><p>Loading...</p></header>);
+		return (<header>{/* <NavBar/> */}<p>Loading...</p></header>);
 	}
 	if(error){
 		return (<p>There was an error. Please refresh the page and try again.</p>);
@@ -24,9 +25,10 @@ export default function Main(props){
 	if(data != null){
 		const context = { user:data.user, refreshUser:refetch }
 		return (
+			<><NavBar currentUser={data.user}/>
 			<UserContext.Provider value={context}>
 				<PageSwitch/>
-			</UserContext.Provider>
+			</UserContext.Provider></>
 		);
 	}else{
 		props.BadLogin();

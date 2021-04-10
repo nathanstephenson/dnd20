@@ -52,6 +52,10 @@ const resolvers = {
                 permissions: 1
             });
         },
+        /* async clearUsers(root, args, context){ LEAVE THIS COMMENTED OUT IT IS ONLY FOR DEVELOPMENT
+            await User.deleteMany({permissions:1})
+            return "deleted users"
+        }, */
         async addCampaign(root, args, context){
             const newID = Mongoose.Types.ObjectId()
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.dm)}, {$addToSet:{campaigns:newID}})

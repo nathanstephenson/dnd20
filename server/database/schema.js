@@ -52,6 +52,7 @@ const typeDefs = gql`
 
     type Mutation {
         addUser(name:String, email:String, username:String, password:String): User
+        clearUsers:String
         addCampaign(dm:String, name:String): Campaign
         deleteCampaign(user:String, dm:String, campaign:String): String
         renameCampaign(id:String, name:String): Campaign

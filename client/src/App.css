@@ -29,20 +29,32 @@
   display: table;
 }
 
+.navbar {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top:0;
+  border: 2px, solid, #282c34;
+}
+
 .navbar li {
   padding-left: 1%;
   padding-right: 1%;
   display: inline-flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
-.navLink:link, .navLink:visited {
+.navLink-home {
+  margin-right: 100%;
+}
+
+.navLink:link, .navLink:visited, .navLink-home:link, .navLink-home:visited {
   text-decoration: none;
+  color: whitesmoke;
 }
 
 .navLink:hover, .navLink:active {
   text-decoration: none;
-  background-color: aqua;
+  background-color: grey;
 }
 
 .campaign li {

@@ -91,7 +91,7 @@ function LoadCampaign(props){
 }
 
 function SubmitCampaign(props){
-    const [submitCampaign, {data, loading, error}] = useMutation(renameCampaign)
+    const [submitCampaign, {data, loading}] = useMutation(renameCampaign)
     while(loading){
         return(<p>loading</p>)
     }
