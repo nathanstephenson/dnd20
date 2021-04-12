@@ -1,2 +1,4 @@
 client/node_modules
 client/.eslintcache
+server/node_modules
+.vscode
