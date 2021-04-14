@@ -9,6 +9,7 @@ import PageSwitch from './PageSwitch'
 
 export default function Main(props){
 
+
 	//console.log(props.username, props.password);
 	const {loading, data, error, refetch, networkStatus} = useQuery(getUser, {variables:{username: props.username, password: props.password}, notifyOnNetworkStatusChange:true, fetchPolicy:'network-only'});
 	console.log("Logged in user", data);

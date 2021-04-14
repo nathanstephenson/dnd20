@@ -46,6 +46,8 @@ const typeDefs = gql`
         campaigns: [Campaign]
         character(id:String): Character
         characters: [Character]
+        classes: [Class]
+        races: [Race]
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
     }
@@ -56,7 +58,7 @@ const typeDefs = gql`
         addCampaign(dm:String, name:String): Campaign
         deleteCampaign(user:String, dm:String, campaign:String): String
         renameCampaign(id:String, name:String): Campaign
-        addCharacter(user:String, campaign:String, name:String): Character
+        addCharacter(user:String, campaign:String, name:String, race:String, class:String, bgInfo:String): Character
     }
 
     type Subscription {

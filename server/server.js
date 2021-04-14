@@ -13,7 +13,8 @@ const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.
 const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
     console.log("connected to mongoDB")
 });//connect to mongoDB with mongoose
-const itemsAPI = require('./database/datasources/itemsAPI')
+const itemsAPI = require('./database/datasources/itemsAPI');
+const characterAPI = require('./database/datasources/characterAPI');
 
 
 const server = new ApolloServer({ schema: schema,
@@ -21,6 +22,7 @@ const server = new ApolloServer({ schema: schema,
     dataSources: () => {//this is for 5eAPI
         return {
             itemsAPI: new itemsAPI(),
+            characterAPI: new characterAPI(),
         };
     },
     tracing: true,

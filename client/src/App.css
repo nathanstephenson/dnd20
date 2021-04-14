@@ -1,3 +1,8 @@
+:root {
+  --primaryColour: #282c34;
+
+}
+
 .App {
   text-align: center;
 }
@@ -14,7 +19,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--primaryColour);
   min-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -30,21 +35,30 @@
 }
 
 .navbar {
-  position: -webkit-sticky; /* Safari */
+  position: -webkit-sticky; /* for safari */
   position: sticky;
-  top:0;
-  border: 2px, solid, #282c34;
-}
-
-.navbar li {
-  padding-left: 1%;
-  padding-right: 1%;
-  display: inline-flex;
-  justify-content: space-around;
+  top:1%;
+  margin-left: 25%;
+  margin-right: 25%;
+  justify-content: space-between;
+  flex-direction: row;
+  border: 1px dashed black;
+  background-color: dimgray;
+  z-index: 1000; /* <apparently this is not very good practice, but works for now to get the navbar over the other components */
 }
 
 .navLink-home {
-  margin-right: 100%;
+  display: inline-flex;
+  margin-right: 30%;
+  margin-left: 1%;
+}
+
+.navLink {
+  display :inline-flex;
+  padding-right: 1%;
+  padding-left: 1%;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .navLink:link, .navLink:visited, .navLink-home:link, .navLink-home:visited {
@@ -52,20 +66,40 @@
   color: whitesmoke;
 }
 
-.navLink:hover, .navLink:active {
+.navLink:hover {
   text-decoration: none;
   background-color: grey;
 }
 
-.campaign li {
+.Current-page {
+  text-decoration: none;
+  background-color: grey;
+}
+
+.campaign {
+  justify-content: flex-start;
+  outline: 2px solid black;
+  display:inline-flexbox;
+  padding: 0.5%;
+  margin: 1%;
+}
+
+.campaign-name {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.campaign ul {
   display:inline-flex;
-  flex-direction: column;
+  vertical-align: middle;
+}
+
+.campaign ul li {
+  display:flex;
   align-items: center;
   justify-content: space-between;
+  vertical-align: middle;
 }
-/*.App-link {
-  color: #61dafb;
-}*/
 
 @keyframes App-logo-spin {
   from {

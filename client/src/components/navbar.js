@@ -3,22 +3,31 @@ import '../App.css'
 import { Link } from "react-router-dom";
 
 export default function NavBar(props){
+
+    const current = window.location.pathname
+    
+    var home = <Link to="/"  className="navLink-home">
+            <h3> DND20 </h3>
+        </Link>
+    var campaigns =  <Link to="/Campaigns" className="navLink">
+            <p> Campaigns </p>
+        </Link>
+    var characters = <Link to="/Characters" className="navLink">
+            <p> Characters </p>
+        </Link>
+    var play = <Link className="navLink">
+            <p> Play </p>
+        </Link>
+    var account = <Link className="navLink">
+            <p> My Account </p>
+        </Link>
+    var links = [home, campaigns, characters, play, account]
+
+    //maybe set current page's link's background to different colour
+
     return(
-        <nav>
-            <ul className="navbar">
-                <li><Link to="/" className="navLink-home">
-                    <h3 name="next" variant="outlined"> DND20 </h3>
-                </Link></li>
-                <li><Link to="/Campaigns" className="navLink">
-                    <p name="next" variant="outlined"> Campaigns </p>
-                </Link></li>
-                <li><Link className="navLink">
-                    <p name="next" variant="outlined"> Characters </p>
-                </Link></li>
-                <li><Link className="navLink">
-                    <p name="next" variant="outlined"> Play </p>
-                </Link></li>
-            </ul>
+        <nav className="navbar">
+            {links}
         </nav>
     )
 }

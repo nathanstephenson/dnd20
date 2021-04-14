@@ -1,4 +1,5 @@
 const { PubSub } = require('graphql-subscriptions');
+const { resetCaches } = require('graphql-tag');
 const Mongoose = require('mongoose');
 const Campaign = require('./models/campaign');
 const Character = require('./models/character');
@@ -14,7 +15,7 @@ const resolvers = {
         },
         user(root, args, context){
             //if (!context.user) {return null};
-            return User.findOne({username: args.username, password: args.password}).populate('campaigns');
+            return User.findOne({username: args.username, password: args.password}).populate('campaigns').populate('characters');
         },
         userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
             //if (!context.user) {return null};
@@ -33,6 +34,12 @@ const resolvers = {
             return Character.findOne({_id:Mongoose.Types.ObjectId(args.id)});
         },
         //---------------5eAPI queries, async because api returns promise
+        async classes(root,args,{dataSources}){
+            return await dataSources.characterAPI.getClasses()
+        },
+        async races(root, args, {dataSources}){
+            return await dataSources.characterAPI.getRaces()
+        },
         async equipmentCategories(root, args, {dataSources}){
             return await dataSources.itemsAPI.getCategories();
         },

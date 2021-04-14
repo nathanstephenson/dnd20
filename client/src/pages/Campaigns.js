@@ -16,6 +16,7 @@ export default class Campaigns extends React.Component {
         this.changeSelected = this.changeSelected.bind(this)
         this.clearSelected = this.clearSelected.bind(this)
         this.wantsNew = this.wantsNew.bind(this)
+        this.cancelNew = this.cancelNew.bind(this)
         this.newSubmitted = this.newSubmitted.bind(this)
         this.newNameChanged = this.newNameChanged.bind(this)
         this.resetWithNew = this.resetWithNew.bind(this)
@@ -41,6 +42,9 @@ export default class Campaigns extends React.Component {
     wantsNew(){
         this.setState({wantsNew:true})
     }
+    cancelNew(){
+        this.setState({wantsNew:false})
+    }
     newSubmitted(e){
         e.preventDefault()
         this.setState({newSubmitted:true})
@@ -56,36 +60,37 @@ export default class Campaigns extends React.Component {
         const {user} = this.context
         return(
             <>
-                {!this.state.chosen && <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>}
-                {!this.state.chosen && <div>
-                    {(!this.state.wantsNew && !this.state.newSubmitted) && <button onClick={this.wantsNew}>New Campaign</button>}
-                    {(this.state.wantsNew && !this.state.newSubmitted) && <form className="Form" onSubmit={this.newSubmitted}>
-                        <label htmlFor="name" className="tbLabel">Campaign Name: 
-                        <input type="name" id="name" name="name" required={true} onChange={this.newNameChanged}/></label>
-                        <input type="submit" value="Submit"/>
-                    </form>}
+                {!this.state.chosen && <><h1 className="title"> Campaigns </h1>
+                    {(!this.state.wantsNew && !this.state.newSubmitted) && <button onClick={this.wantsNew}>+</button>}
+                    {(this.state.wantsNew && !this.state.newSubmitted) && <>
+                        <form className="Form" onSubmit={this.newSubmitted}>
+                            <label htmlFor="name" className="tbLabel">Campaign Name: 
+                            <input type="name" id="name" name="name" required={true} onChange={this.newNameChanged}/></label>
+                            <input type="submit" value="Submit"/>
+                            <button onClick={this.cancelNew}>x</button>
+                        </form></>}<br/><br/>
+                    <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>
                     {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetWithNew}/>}
-                </div>}
+                </>}
                 {this.state.chosen && <EditCampaign currentUserID={user._id} campaignID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
             </>
         )
     }
 }
 
-function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
+export function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
     const {user, refreshUser} = useContext(UserContext)
     if(props.needsRefresh){
         refreshUser()
         props.refreshed()
     }
     const campaignList = []
-    campaignList.push(<h2>These are your campaigns:</h2>)
+    campaignList.push()
     for (let i = 0; i<user.campaigns.length; i++){//adds jsx elemnts to the array
         campaignList.push(<Campaign campaign={user.campaigns[i]} changeSelected={props.changeSelected}/>)
     }
     return (
         <>
-            <h1 className="title"> Campaigns </h1>
             {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
             {(user.campaigns.length!==0) && campaignList}
         </>
@@ -94,16 +99,14 @@ function DisplayCampaigns(props){//need to render the Campaign function for as m
 
 function Campaign(props){
     return (
-        <ul className="campaign">
-            <li key="c1" className="campaign_name">
-                <p>{props.campaign.name}</p>
-            </li>
-            <li key="c2"><ul><li>
+        <div className="campaign">
+            <p key="c1" className="campaign-name">{props.campaign.name}</p>
+            <ul><li key="editButton">
                 <button onClick={() => props.changeSelected(props.campaign._id)}>
                     Edit
                 </button>
-            </li></ul></li>
-        </ul>
+            </li></ul>
+        </div>
     )
 }
 

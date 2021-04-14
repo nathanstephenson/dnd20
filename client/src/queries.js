@@ -20,6 +20,10 @@ export const getUser = gql`
         name
         dm
       }
+      characters{
+        _id
+        name
+      }
     }
   }
 `;
@@ -36,6 +40,21 @@ export const addUser = gql`
   mutation addUser($name:String, $username:String, $password:String){
     addUser(name:$name, username:$username, password:$password){
       name
+    }
+  }
+`;
+
+export const currentUser = gql`
+  subscription currentUser($id:String){
+    updateUser(id:$id){
+      _id
+      name
+      permissions
+      campaigns{
+        _id
+        name
+        dm
+      }
     }
   }
 `;
@@ -80,17 +99,34 @@ export const renameCampaign = gql`
   }
 `;
 
-export const currentUser = gql`
-  subscription currentUser($id:String){
-    updateUser(id:$id){
+export const getCharacter = gql`
+  query getCharacter($id:String){
+    getCharacter(id:$id){
       _id
       name
-      permissions
-      campaigns{
-        _id
-        name
-        dm
-      }
+    }
+  }
+`;
+
+export const getClasses = gql`
+  query getClasses{
+    classes{
+      index
+      name
+    }
+  }
+`;
+
+export const getRaces = gql`
+  query getRaces{
+    races{
+      index
+      name
+      speed
+      age
+      alignment
+      size_description
+      language_desc
     }
   }
 `;
