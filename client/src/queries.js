@@ -101,10 +101,57 @@ export const renameCampaign = gql`
 
 export const getCharacter = gql`
   query getCharacter($id:String){
-    getCharacter(id:$id){
+    character(id:$id){
+      _id
+      user
+      campaign
+      name
+      race
+      background
+      class
+      level
+      hp
+      cha
+      con
+      dex
+      int
+      str
+      wis
+    }
+  }
+`;
+
+export const addCharacter = gql`
+  mutation addCharacter($user:String, $campaign:String, $name:String, $race:String, $background:String){
+    addCharacter(user:$user, campaign:$campaign, name:$name, race:$race, background:$background){
       _id
       name
     }
+  }
+`;
+
+export const updateCharacterInfo = gql`
+  mutation updateCharacterInfo($id:String, $name:String, $campaign:String){
+    updateCharacterInfo(id:$id, name:$name, campaign:$campaign){
+      _id
+      name
+    }
+  }
+`;
+
+export const updateCharacterStats = gql`
+  mutation updateCharacterStats($id:String, $class:String, $cha:Int, $con:Int, $dex:Int, $int:Int, $str:Int, $wis:Int){
+    updateCharacterStats(id:$id, class:$class, cha:$cha, con:$con, dex:$dex, int:$int, str:$str, wis:$wis){
+      _id
+      campaign
+      name
+    }
+  }
+`;
+
+export const deleteCharacter = gql`
+  mutation deleteCharacter($user:String, $campaign:String, $character:String){
+    deleteCharacter(user:$user, campaign:$campaign, character:$character)
   }
 `;
 

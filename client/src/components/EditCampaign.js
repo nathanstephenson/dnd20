@@ -83,7 +83,8 @@ function LoadCampaign(props){
         return(<p>loading...</p>)
     }
     if(error){//no need to print errors here, as they wont. just if data && data.variable
-        return(<p>{error}</p>)
+        console.log(error)
+        return(<p></p>)
     }else{
         props.return(data.campaign)
         return(<p>done</p>)

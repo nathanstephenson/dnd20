@@ -37,7 +37,6 @@ export default class Characters extends React.Component {
 
     render() {
         const {user} = this.context
-        console.log(user)
         return(
             <>
                 <h1 className="title"> Characters </h1>

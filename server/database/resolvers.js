@@ -1,6 +1,7 @@
 const { PubSub } = require('graphql-subscriptions');
 const { resetCaches } = require('graphql-tag');
 const Mongoose = require('mongoose');
+const apiSchema = require('./apiSchema');
 const Campaign = require('./models/campaign');
 const Character = require('./models/character');
 const User = require('./models/user');
@@ -37,20 +38,29 @@ const resolvers = {
         async classes(root,args,{dataSources}){
             return await dataSources.characterAPI.getClasses()
         },
+        async class(root,args,{dataSources}){
+            return await dataSources.characterAPI.getClass(args.index)
+        },
         async races(root, args, {dataSources}){
             return await dataSources.characterAPI.getRaces()
+        },
+        async race(root,args,{dataSources}){
+            return await dataSources.characterAPI.getRace(args.index)
         },
         async equipmentCategories(root, args, {dataSources}){
             return await dataSources.itemsAPI.getCategories();
         },
         async equipment(root, args, {dataSources}){
             return await dataSources.itemsAPI.getEquipment(args.id)
-        }
+        },
+        async abilityScores(root, args, {dataSources}){
+            return await dataSources.characterAPI.getAbilityScores()
+        },
     },
 
     Mutation: {
         addUser(root, args, context){//works, but multiple times
-            User.create({
+            return User.create({
                 _id: Mongoose.Types.ObjectId(),
                 name: args.name,
                 email: args.email,
@@ -86,12 +96,35 @@ const resolvers = {
         async addCharacter(root, args, context){
             const newID = Mongoose.Types.ObjectId()
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{characters:newID}})
+            await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$addToSet:{characters:newID}})
             return await Character.create({
                 _id: newID,
                 user: Mongoose.Types.ObjectId(args.user),
                 campaign: Mongoose.Types.ObjectId(args.campaign),
                 name: args.name,
+                race: args.race,
+                background: args.background,
+                class: "",
+                level: 0,
+                cha: 0,
+                con: 0,
+                dex: 0,
+                int: 0,
+                str: 0,
+                wis: 0,
             })
+        },
+        async updateCharacterInfo(root, args, context){
+            return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{name:args.name, campaign:args.campaign}}, {new:true})
+        },
+        async updateCharacterStats(root, args, context){
+            return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{class:args.class, cha:args.cha, con:args.con, dex:args.dex, int:args.int, str:args.str, wis:args.wis}}, {new:true})
+        },
+        async deleteCharacter(root, args, context){
+            await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$pull:{characters:args.character}})
+            await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$pull:{characters:args.character}})
+            await Character.findByIdAndDelete(args.character)
+            return "ran character deletion"
         },
     },
 

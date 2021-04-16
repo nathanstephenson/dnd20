@@ -6,14 +6,27 @@ const apiTD = require('./apiSchema')
 const typeDefs = gql`
     
     type Character {
-        _id: ID
+        _id: ID!
         user: ID
-        campaign: Campaign
+        campaign: ID
         name: String
+        race: String,
+        background: String,
+        class: String,
+        level: Int,
+        hp: Int,
+        cha: Int,
+        con: Int,
+        dex: Int,
+        int: Int,
+        str: Int,
+        wis: Int,
+        items: [String],
+        proficiencies: [String],
     }
 
     type Campaign {
-        _id: ID
+        _id: ID!
         name: String
         dm: ID
         players: [ID]
@@ -21,13 +34,13 @@ const typeDefs = gql`
     }
 
     type APIReference {
-        index: String
+        index: String!
         name: String
-        url: String
+        url: String!
     }
 
     type User {
-        _id: ID
+        _id: ID!
         name: String
         email: String
         username: String
@@ -47,18 +60,24 @@ const typeDefs = gql`
         character(id:String): Character
         characters: [Character]
         classes: [Class]
+        class(index:String): Class
         races: [Race]
+        race(index:String): Race
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
+        abilityScores: [AbilityScore]
     }
 
     type Mutation {
         addUser(name:String, email:String, username:String, password:String): User
         clearUsers:String
-        addCampaign(dm:String, name:String): Campaign
-        deleteCampaign(user:String, dm:String, campaign:String): String
-        renameCampaign(id:String, name:String): Campaign
-        addCharacter(user:String, campaign:String, name:String, race:String, class:String, bgInfo:String): Character
+        addCampaign(dm:String!, name:String): Campaign
+        deleteCampaign(user:String!, dm:String!, campaign:String!): String
+        renameCampaign(id:String!, name:String): Campaign
+        addCharacter(user:String!, campaign:String, name:String!, race:String!, background:String): Character
+        deleteCharacter(user:String!, character:String!, campaign:String!):String
+        updateCharacterInfo(id:String, name:String, campaign:String):Character
+        updateCharacterStats(id:String, class:String, level:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
     }
 
     type Subscription {

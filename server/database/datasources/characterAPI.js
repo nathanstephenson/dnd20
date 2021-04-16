@@ -3,9 +3,9 @@ const {RESTDataSource} = require('apollo-datasource-rest');
 class characterAPI extends RESTDataSource {
     constructor(){
         super();
-        this.expandAPIRef = this.expandAPIRef.bind(this)
         this.baseURL = 'https://www.dnd5eapi.co/'
     }
+
     async expandAPIRef(array){
         let newarray = []
         for await(let element of array) {
@@ -18,17 +18,27 @@ class characterAPI extends RESTDataSource {
 
 
     async getClasses(){//should just deliver all populated classes
-        let {results} = await this.get(`api/classes`)
+        const {results} = await this.get(`api/classes`)
         return await this.expandAPIRef(results)
     }
-
+    async getClass(index){
+        const result = await this.get(`api/classes/${index}`)
+        return result
+    }
     async getRaces(){
-        let {results} = await this.get(`api/races`)
+        const {results} = await this.get(`api/races`)
         return await this.expandAPIRef(results)
     }
-
-    async getAny(url){
-        let {results} = await this.get(url)
+    async getRace(index){
+        const result = await this.get(`api/races/${index}`)
+        return result
+    }
+    async getAbilityScores(){
+        const {results} = await this.get(`api/ability-scores`)
+        return await this.expandAPIRef(results)
+    }
+    async getSkills(){
+        const {results} = await this.get(`api/skills`)
         return await this.expandAPIRef(results)
     }
 }
