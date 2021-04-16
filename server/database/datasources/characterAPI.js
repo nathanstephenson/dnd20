@@ -12,7 +12,6 @@ class characterAPI extends RESTDataSource {
             let expanded = await this.get(element.url)
             newarray.push(expanded)
         }
-        console.log(newarray)
         return newarray
     }
 

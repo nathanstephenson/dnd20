@@ -34,9 +34,9 @@ const typeDefs = gql`
     }
 
     type APIReference {
-        index: String!
+        index: String
         name: String
-        url: String!
+        url: String
     }
 
     type User {
@@ -71,13 +71,13 @@ const typeDefs = gql`
     type Mutation {
         addUser(name:String, email:String, username:String, password:String): User
         clearUsers:String
-        addCampaign(dm:String!, name:String): Campaign
-        deleteCampaign(user:String!, dm:String!, campaign:String!): String
-        renameCampaign(id:String!, name:String): Campaign
-        addCharacter(user:String!, campaign:String, name:String!, race:String!, background:String): Character
-        deleteCharacter(user:String!, character:String!, campaign:String!):String
+        addCampaign(dm:String, name:String): Campaign
+        deleteCampaign(user:String, dm:String, campaign:String): String
+        renameCampaign(id:String, name:String): Campaign
+        addCharacter(user:String, campaign:String, name:String, race:String, background:String): Character
+        deleteCharacter(user:String, character:String, campaign:String):String
         updateCharacterInfo(id:String, name:String, campaign:String):Character
-        updateCharacterStats(id:String, class:String, level:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
+        updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
     }
 
     type Subscription {

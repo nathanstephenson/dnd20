@@ -16,7 +16,7 @@ const resolvers = {
         },
         user(root, args, context){
             //if (!context.user) {return null};
-            return User.findOne({username: args.username, password: args.password}).populate('campaigns').populate('characters');
+            return User.findOne({username: args.username, password: args.password}).populate('characters').populate('campaigns');
         },
         userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
             //if (!context.user) {return null};

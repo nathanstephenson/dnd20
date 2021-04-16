@@ -29,11 +29,11 @@ export default class EditCharacter extends React.Component {
 
     render(){
         console.log(this.state.name, this.state.race, this.state.campaign, this.state.bg)
-        return(<>{/* unloaded and unentered vvv */}
+        return(<>
+            <button className="backButton" onClick={this.props.back}>Back</button>{/* vvv unloaded and unentered*/}
             {/* ((this.characterID!==null)&&(this.state.character===null)) ? <LoadCharacter ID={this.characterID} return={this.returnLoaded}/> : <CharacterInfo submitNewGeneral={this.submitNewGeneral} user={this.user} character={this.state.character} new={this.state.character===null}/> */}
+            <CharacterInfo submitNew={this.submitNew} submitGeneral={this.submitGeneral} user={this.user} character={this.state.character} new={this.state.character===null} back={this.props.back}/>
             {((this.characterID!==null)&&(this.state.character===null)) && <LoadCharacter ID={this.characterID} return={this.returnLoaded}/>}
-            <CharacterInfo submitNew={this.submitNew} submitGeneral={this.submitGeneral} user={this.user} character={this.state.character} new={this.state.character===null}/>
-            <button onClick={this.props.back}>Back</button>
         </>)
     }
 }
@@ -68,9 +68,14 @@ function DeleteCharacter(props){
 
 function CharacterInfo(props){
     console.log('character info', props.new)
+    const {loading:raceLoading, data:raceData} = useQuery(getRaces)
+    const {loading:classLoading, data:classData} = useQuery(getClasses)
     const [page, changePage] = useState(0)
+    while(classLoading||raceLoading){
+        return(<p>Loading...</p>)
+    }
     let pages = [
-        (props.new ? <NewGeneralInfo user={props.user} submit={props.submitNew}/> : <ExistingGeneralInfo character={props.character} submit={props.submitGeneral}/>),
+        (props.new ? <NewGeneralInfo races={raceData.races} user={props.user} submit={props.submitNew} back={props.back}/> : <ExistingGeneralInfo character={props.character} classes={classData.classes} submit={props.submitGeneral} back={props.back}/>),
     ]
     pages.forEach(element => {
         if(element!==pages[page]){
@@ -85,35 +90,29 @@ function CharacterInfo(props){
 
 function NewGeneralInfo(props){
     const {user} = useContext(UserContext)
-    const {loading:raceLoading, data:raceData} = useQuery(getRaces)
     const [name, changeName] = useState("")
     const [background, changeBG] = useState("")
     const [race, changeRace] = useState("")
     const [campaign, changeCampaign] = useState("")
     const [createNew, {loading:newLoading, data:newData}] = useMutation(addCharacter, {variables:{user:user._id, campaign:campaign, name:name, race:race, background:background}})
-    while(raceLoading||newLoading){
+    while(newLoading){
         return(<p>Loading...</p>)
     }
-    console.log(user._id, campaign, name, race, background)
     if(newData!==undefined){
         props.back()
     }
-    return (<form onSubmit={(e)=>{e.preventDefault();createNew()}}>
+    return (<form onSubmit={createNew}>
         <input type="submit" /><br/>
         <label htmlFor="name" className="tbLabel">Name: 
         <input type="name" id="name" name="name" required={true} onChange={(e)=>{e.preventDefault();changeName(e.target.value)}} value={name}/></label>
-        <label>Campaign:
-        <CampaignSelect id="campaign" campaigns={user.campaigns} changeCampaign={changeCampaign}/></label><br/>
+        <CampaignSelect id="campaign" campaigns={user.campaigns} changeCampaign={changeCampaign}/><br/>
         <label htmlFor="bg" className="tbLabel">Background Info / Lore: 
         <textarea id="bg" name="bg" onChange={(e)=>{e.preventDefault();changeBG(e.target.value)}} value={background} rows="4" cols="50" maxLength="500"/></label><br/>
-        <label htmlFor="race" className="tbLabel">Race: 
-        <RaceSelect id="race" races={raceData.races} changeRace={changeRace}/></label><br/>
+        <RaceSelect id="race" races={props.races} changeRace={changeRace}/><br/>
     </form>)
 }
 
 function ExistingGeneralInfo(props){
-    console.log("existing character")
-    const {loading:classLoading, data:classData} = useQuery(getClasses)
     const {user} = useContext(UserContext)
     const character = props.character
     const [campaign, changeCampaign] = useState(character.campaign)
@@ -124,25 +123,34 @@ function ExistingGeneralInfo(props){
     const [int, changeInt] = useState(character.int)
     const [wis, changeWis] = useState(character.wis)
     const [cha, changeCha] = useState(character.cha)//need to implement for maximum levels etc, although maybe later
+    console.log(charClass)
     const [rename, toggleRename] = useState(false)
     const [name, changeName] = useState(character.name)
-    const [delCharacter] = useMutation(deleteCharacter, {variables:{id:character._id, user:character.user, campaign:character.campaign}})
-    const [updateInfo] = useMutation(updateCharacterInfo, {variables:{id:character._id, name:name, campaign:campaign}})
-    const [updateStats] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:cha, con:con, str:str, dex:dex, int:int, wis:wis}})
-    while(classLoading){
-        return(<p>Loading...</p>)
+    const [delCharacter, {loading:delLoading, data:delData}] = useMutation(deleteCharacter, {variables:{character:character._id, user:character.user, campaign:character.campaign}})
+    const [updateInfo, {loading:infoLoading, data:infoData}] = useMutation(updateCharacterInfo, {variables:{id:character._id, name:name, campaign:campaign}})
+    const [updateStats, {loading:statsLoading, data:statsData}] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:parseInt(cha), con:parseInt(con), str:parseInt(str), dex:parseInt(dex), int:parseInt(int), wis:parseInt(wis)}})
+    while(delLoading||infoLoading||statsLoading){
+        if(delLoading){
+            console.log(character._id, character.user, character.campaign)
+        }
+        return(<p>loading</p>)
     }
-    return (<><h2>{character.name}</h2>
-        <button onClick={()=>{delCharacter();props.back();}}>Delete Character</button>
-        <form onSubmit={updateStats}>
-            {rename && <>
-                <label htmlFor="str" className="tbLabel">Str: 
+    if(delData!==undefined||infoData!==undefined||statsData!==undefined){
+        props.back()
+    }
+    return (<><div><h2>{character.name}</h2>
+        <button onClick={delCharacter}>Delete Character</button></div>
+        {rename ? <>
+            <form onSubmit={updateInfo}>
+                <label htmlFor="name" className="tbLabel">Name: 
                 <input type="text" id="name" name="name" required={true} onChange={(e)=>{e.preventDefault();changeName(e.target.value)}} value={name}/></label>
-                <label>Campaign:
-                <CampaignSelect id="campaign" campaign={campaign} campaigns={user.campaigns} changeCampaign={changeCampaign}/>
-                </label><button onClick={updateInfo}>Accept</button><br/>
-            </>}<button onClick={()=>{toggleRename(!rename)}}>Rename/ChangeCampaign</button>
+                <CampaignSelect id="campaign" current={campaign} campaigns={user.campaigns} changeCampaign={changeCampaign}/>
+                <input type="submit"/><button onClick={()=>{toggleRename(!rename)}}>Cancel</button>
+            </form>
+        </> : <><button onClick={()=>{toggleRename(!rename)}}>Rename/ChangeCampaign</button><br/></>}
+        <form onSubmit={updateStats}>
             <input type="submit" /><br/>
+            <ClassSelect id="class" current={charClass} classes={props.classes} changeClass={changeClass}/><br/>
             <label htmlFor="str" className="tbLabel">Str: 
             <input type="number" id="str" name="str" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeStr(e.target.value)}} value={str}/></label>
             <label htmlFor="dex" className="tbLabel">Dex: 
@@ -155,22 +163,19 @@ function ExistingGeneralInfo(props){
             <input type="number" id="wis" name="wis" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeWis(e.target.value)}} value={wis}/></label>
             <label htmlFor="cha" className="tbLabel">Cha: 
             <input type="number" id="cha" name="cha" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeCha(e.target.value)}} value={cha}/></label>
-            <div><label htmlFor="class" className="tbLabel">Class:
-            <ClassSelect id="class" class={charClass} classes={classData.classes} changeClass={changeClass}/></label></div>
         </form>
     </>)
 }
 
 function ClassSelect(props){
     const [selected, changeSelected] = useState(0)
-    let classOptions = arrayToOptions(props.classes, props.class)
+    let classOptions = arrayToOptions(props.classes, props.current)
     return(
-        <div>
+        <label htmlFor="class" className="tbLabel">Class:
             <select id="classes" name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index); changeSelected(e.target.selectedIndex)}}>
                 {classOptions}
             </select>
-            <p>{props.classes[selected].alignment}</p>
-        </div>
+        </label>
     )
 }
 
@@ -178,20 +183,22 @@ function RaceSelect(props){
     const [selected, changeSelected] = useState(0)
     let raceOptions = arrayToOptions(props.races)
     return(
-        <div>
+        <div><label htmlFor="races" className="tbLabel">Race:
             <select id="races" name="races" onChange={(e)=>{props.changeRace(props.races[e.target.selectedIndex].index); changeSelected(e.target.selectedIndex)}}>
                 {raceOptions}
-            </select>
+            </select></label>
             <p>{props.races[selected].alignment}</p>
         </div>
     )
 }
 
 function CampaignSelect(props){
-    const campaignOptions = arrayToOptions(props.campaigns, props.campaign)
+    const campaignOptions = arrayToOptions(props.campaigns, props.current)
     return(<>
-        <select id="campaigns" name="campaigns" onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}}>
-            {campaignOptions}
-        </select>
+        <label htmlFor="campaigns" className="tbLabel">Campaign:
+            <select id="campaigns" name="campaigns" onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}}>
+                {campaignOptions}
+            </select>
+        </label>
     </>)
 }
