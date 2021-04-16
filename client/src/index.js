@@ -22,7 +22,7 @@ export const apolloClient = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client = {apolloClient}>
     <BrowserRouter>
-      <App />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/><App />
     </BrowserRouter>
   </ApolloProvider>,
   document.getElementById('root')

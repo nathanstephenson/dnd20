@@ -168,11 +168,10 @@ function ExistingGeneralInfo(props){
 }
 
 function ClassSelect(props){
-    const [selected, changeSelected] = useState(0)
     let classOptions = arrayToOptions(props.classes, props.current)
     return(
         <label htmlFor="class" className="tbLabel">Class:
-            <select id="classes" name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index); changeSelected(e.target.selectedIndex)}}>
+            <select id="classes" name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}}>
                 {classOptions}
             </select>
         </label>

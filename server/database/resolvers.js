@@ -106,12 +106,12 @@ const resolvers = {
                 background: args.background,
                 class: "",
                 level: 0,
-                cha: 0,
-                con: 0,
-                dex: 0,
-                int: 0,
-                str: 0,
-                wis: 0,
+                cha: 10,
+                con: 10,
+                dex: 10,
+                int: 10,
+                str: 10,
+                wis: 10,
             })
         },
         async updateCharacterInfo(root, args, context){
