@@ -5,7 +5,9 @@ const campaignSchema = new Mongoose.Schema({
   name: String,
   dm: Mongoose.Schema.Types.ObjectId,
   players: [Mongoose.Schema.Types.ObjectId],
-  characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Character' }]
+  characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Character' }],
+  sessionHistory: [Mongoose.Schema.Types.ObjectId],
+  currentSession: { type: Mongoose.Schema.Types.ObjectId, ref: 'Session' }
 });
 
 const Campaign = Mongoose.model('Campaign', campaignSchema);

@@ -1,9 +1,10 @@
-const { PubSub } = require('graphql-subscriptions');
+const { PubSub, withFilter } = require('graphql-subscriptions');
 const { resetCaches } = require('graphql-tag');
 const Mongoose = require('mongoose');
 const apiSchema = require('./apiSchema');
 const Campaign = require('./models/campaign');
 const Character = require('./models/character');
+const Session = require('./models/session');
 const User = require('./models/user');
 
 const pubsub = new PubSub()//only works for a single server instance, so would need an alternative for cloud deployment
@@ -16,12 +17,17 @@ const resolvers = {
         },
         user(root, args, context){
             //if (!context.user) {return null};
-            return User.findOne({username: args.username, password: args.password}).populate('characters').populate('campaigns');
+            //return User.findOne({username: args.username, password: args.password}).populate('characters').populate('campaigns');
+            return User.findById(args.id).populate('characters').populate('campaigns');
         },
-        userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
+        async getUserID(root, args, context){
+            const user = await User.findOne({username: args.username, password: args.password})
+            return user._id
+        },
+        /* userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
             //if (!context.user) {return null};
             return User.findOne({_id:Mongoose.Types.ObjectId(args.id)});
-        },
+        }, */
         campaigns(root, args, context){
             return Campaign.find().populate('characters');
         },
@@ -90,7 +96,6 @@ const resolvers = {
             return "ran campaign deletion"
         },
         renameCampaign(root, args, context){
-            //pubsub.publish('CAMPAIGN_UPDATED', {renameCampaign: {name:args.name}})
             return Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {name:args.name}, {new:true});//, {upsert:true}
         },
         async addCharacter(root, args, context){
@@ -126,16 +131,41 @@ const resolvers = {
             await Character.findByIdAndDelete(args.character)
             return "ran character deletion"
         },
+        async createSession(root, args, context){
+            const newID = Mongoose.Types.ObjectId()
+            const campaign = await Campaign.findById(args.campaign)
+            await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$addToSet: {campaignHistory:campaign.currentSession}})
+            await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$set: {currentSession:newID}})
+            const characters = []
+            for await (const character of campaign.characters){
+                characters.push({
+                    _id: Mongoose.Types.ObjectId(character._id),
+                    character: Mongoose.Types.ObjectId(character._id),
+                    position: 0,
+                })
+            }
+            return await Session.create({
+                _id: newID,
+                campaign: Mongoose.Types.ObjectId(args.campaign),
+                characters: characters
+            })
+        },
+        async changeCharacterPos(root, args, context){
+            await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), "characters._id": Mongoose.Types.ObjectId(args.charcter)}, {$set:{'characters.$.position': args.position}})//positional operator "$" makes sure the mutation happens to the corrent object in the array
+            const payload = await Session.findById(args.session).populate('characters.character')
+            pubsub.publish('SESSION_UPDATED', {payload})
+        }
     },
 
-    /* Subsciption: {
-        campaignUpdate: {
-            subscribe: () => pubsub.asyncIterator(['CAMPAIGN_UPDATED'])
+    Subscription: {
+        sessionUpdate: {
+            subscribe: withFilter(() => pubsub.asyncIterator(['SESSION_UPDATED']),
+                (payload, variables)=>{
+                    return (payload.changeCharacterPos.campaign===Mongoose.Types.ObjectId(variables.campaign))
+                }
+            )
         },
-        userUpdate: {
-            subscribe: () => pubsub.asyncIterator(['USER_UPDATED'])
-        }
-    } */
+    }
 };
 
 module.exports = resolvers;

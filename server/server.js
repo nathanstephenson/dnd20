@@ -25,6 +25,9 @@ const server = new ApolloServer({ schema: schema,
             characterAPI: new characterAPI(),
         };
     },
+    subscriptions: {
+        path: '/subscriptions'
+    },
     tracing: true,
 });
 //connect the apollo server to express and serve the react app

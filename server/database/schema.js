@@ -50,9 +50,22 @@ const typeDefs = gql`
         characters: [Character]
     }
 
+    type CharacterPosition {
+        _id: ID!
+        character: Character!
+        position: Int!
+    }
+
+    type Session {
+        _id: ID!
+        campaign: ID
+        characters: [CharacterPosition]
+    }
+
     type Query {
-        user(name:String, email:String, username:String, password:String): User
-        userByID(id:String): User
+        
+        getUserID(username:String, password:String):String
+        user(id:String): User
         users: [User]
         campaign(id:String): Campaign
         campaignByID(id:String): Campaign
@@ -78,14 +91,19 @@ const typeDefs = gql`
         deleteCharacter(user:String, character:String, campaign:String):String
         updateCharacterInfo(id:String, name:String, campaign:String):Character
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
+        createSession(campaign:String):Session
+        changeCharacterPos(session:String, character:String, position:Int):Session
     }
 
     type Subscription {
-        userUpdate(id:String):User
+        sessionUpdate(id:String):Session
     }
 `;
 
-/* type Map {
+/* 
+user(name:String, email:String, username:String, password:String): User
+
+type Map {
     _id: ID!
     creator: User!
     campaign: Campaign
@@ -94,51 +112,7 @@ const typeDefs = gql`
     width: Int
     height: Int
     startCell: Int
-}
-
-
-    type APIReference {
-        index: String
-        name: String
-        url: String
-    }
-
-    type Choice {
-        choose: Int
-        type: String
-        from: [APIReference]
-    }
-
-    type Equipment {
-        _id: String!
-        armor_category: String
-        armor_class: EquipmentArmor_class
-        capacity: String
-        category_range: String
-        contents: [EquipmentContents]
-        cost: EquipmentCost
-        damage: EquipmentDamage
-        desc: [String]
-        equipment_category: AbilityScoreSkills
-        gear_category: AbilityScoreSkills
-        index: String
-        name: String
-        properties: [AbilityScoreSkills]
-        quantity: Float
-        range: EquipmentRange
-        special: [String]
-        speed: EquipmentSpeed
-        stealth_disadvantage: Boolean
-        str_minimum: Float
-        throw_range: EquipmentThrow_range
-        tool_category: String
-        two_handed_damage: EquipmentTwo_handed_damage
-        url: String
-        vehicle_category: String
-        weapon_category: String
-        weapon_range: String
-        weight: Float
-      }*/
+}*/
 const td = [apiTD,typeDefs]
 const schema = makeExecutableSchema({typeDefs: td, resolvers});
 module.exports = schema;
