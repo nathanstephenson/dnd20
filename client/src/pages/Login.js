@@ -1,8 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLazyQuery } from '@apollo/client';
 import '../App.css';
 import Register from './Register';
+import {getUserID} from '../queries'
 
-class Login extends React.Component {//this isn't persistent over refreshes (cached) but i dont really want that rn
+function Login(props) {
+    const [id, setID] = useState(null)
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [registered, toggleRegistered] = useState(true)
+    const [stayLoggedIn, setStay] = useState(false)
+    const [badLogin, toggleBadLogin] = useState(false)
+    const [getID, {data, loading, called}] = useLazyQuery(getUserID, {fetchPolicy:'network-only'})
+
+    useEffect(()=>{
+        if(!loading&&(id!==null)){
+            props.handleLogin(id)
+        }
+        if(!loading && called && id===null){
+            if(data!==undefined){
+                setID(data.getUserID)
+            }else{
+                toggleBadLogin(true)
+            }
+        }
+    }, [loading, called, id, data, props])
+
+    return (
+        <header className="App-header">
+            {registered && //show login form if not logged in
+                (<><div><form id="Form" className="Form" onSubmit={(e)=>{e.preventDefault();getID({variables:{username:username, password:password}})}}>
+                        <p> Please enter your username and password </p>
+                        <label htmlFor="user">Username: 
+                            <input type="username" name="user" id="user" required={true} autoFocus={true} value={username} onChange={(e)=>{e.preventDefault();setUsername(e.target.value)}}/>
+                        </label><br />
+                        <label htmlFor="pass">Password: 
+                            <input type="password" name="pass" id="pass" required={true} value={password} onChange={(e)=>{e.preventDefault();setPassword(e.target.value);}}/>
+                        </label><br />
+                        <input type="submit" value="Submit" variant="outlined"/>
+                        <label htmlFor="rememberLogin"> Remember me
+                            <input type="checkbox" id="rememberLogin" name="rememberLogin" value={stayLoggedIn}/>{/*not implemented yet*/}
+                        </label>
+                    </form>
+                    <button name="next2" variant="outlined" onClick={()=>{toggleRegistered(false)}}>
+                            register
+                    </button>
+                </div>
+                {badLogin && <p>Could not find a user to match input username and password.</p>}</>)
+            }
+            {loading && <p>loading...</p>}
+            {!registered && <Register Registered={()=>{toggleRegistered(true)}}/>}
+        </header>
+    )
+}
+
+/* class Login extends React.Component {//this isn't persistent over refreshes (cached) but i dont really want that rn
     
     constructor(props) {
         super(props);
@@ -57,7 +109,7 @@ class Login extends React.Component {//this isn't persistent over refreshes (cac
                         </label><br />
                         <input type="submit" value="Submit" variant="outlined"/>
                         <label htmlFor="rememberLogin"> Remember me
-                            <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}/>{/*not implemented yet, checkbox doesnt even return anything on submit*/}
+                            <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}/>---------not implemented yet, checkbox doesnt even return anything on submit
                         </label>
                     </form>
                     <button name="next2" variant="outlined" onClick={this.NotRegistered}>
@@ -70,6 +122,6 @@ class Login extends React.Component {//this isn't persistent over refreshes (cac
             </header>
         )
     }
-}
+} */
 
 export default Login;

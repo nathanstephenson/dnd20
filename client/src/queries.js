@@ -1,7 +1,7 @@
 import {gql} from '@apollo/client';
 
 //queries for client, import from here to necessary paths
-export const getUsers = gql`
+/* export const getUsers = gql`
   query getAllUsers{
     users {
       name
@@ -9,8 +9,8 @@ export const getUsers = gql`
       password
     }
   }
-`;
-export const getUser = gql`
+`; */
+/* export const getUser = gql`
   query getUser($username:String, $password:String){
     user(username: $username, password: $password){
       _id
@@ -26,12 +26,28 @@ export const getUser = gql`
       }
     }
   }
+`; */
+
+export const getUserID = gql`
+  query getUserID($username:String, $password:String){
+    getUserID(username:$username, password:$password)
+  }
 `;
+
 export const getUserByID = gql`
-  query getUserByID($_id: String){
-    userByID(_id: $_id){
+  query getUserByID($id: String){
+    user(id: $id){
+      _id
       name
-      permissions
+      campaigns{
+        _id
+        name
+        dm
+      }
+      characters{
+        _id
+        name
+      }
     }
   }
 `;

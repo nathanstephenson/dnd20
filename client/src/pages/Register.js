@@ -2,7 +2,7 @@ import React from 'react';
 import {useQuery, useMutation} from '@apollo/client'
 import '../App.css';
 import { Link } from "react-router-dom";
-import {getUser, addUser} from '../queries';
+import {addUser, getUserID} from '../queries';
 
 
 
@@ -77,12 +77,12 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const {data:queryData, loading:queryLoading} = useQuery(getUser, {variables: {username:props.username, password:props.passsword}});//looking for existing user
+	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.passsword}});//looking for existing user
 	const [newUser, { data, loading }] = useMutation(addUser);
 	while(queryLoading){
 		return(<p>Checking for existing user...</p>)
 	}
-	if(queryData.user===null){//apparently here cannot read 'undefined' user, but that same method works in login???
+	if(queryData===null){//apparently here cannot read 'undefined' user, but that same method works in login???
 		console.log("user doesn't already exist")
 		while(loading){//warning about destructuring, but loading does show
 			return(<p>Loading...</p>);
