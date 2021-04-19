@@ -13,7 +13,7 @@ function Login(props) {
     const [badLogin, toggleBadLogin] = useState(false)
     const [getID, {data, loading, called}] = useLazyQuery(getUserID, {fetchPolicy:'network-only'})
 
-    useEffect(()=>{
+    useEffect(()=>{//if the client recieves an id upon request, the user may continue. if not, they are stuck
         if(!loading&&(id!==null)){
             props.handleLogin(id)
         }
