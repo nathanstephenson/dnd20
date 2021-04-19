@@ -63,7 +63,6 @@ const typeDefs = gql`
     }
 
     type Query {
-        
         getUserID(username:String, password:String):String
         user(id:String): User
         users: [User]
@@ -92,7 +91,7 @@ const typeDefs = gql`
         updateCharacterInfo(id:String, name:String, campaign:String):Character
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
         createSession(campaign:String):Session
-        changeCharacterPos(session:String, character:String, position:Int):Session
+        changeCharacterPos(session:String, character:String, position:Int):String
     }
 
     type Subscription {

@@ -151,9 +151,10 @@ const resolvers = {
             })
         },
         async changeCharacterPos(root, args, context){
-            await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), "characters._id": Mongoose.Types.ObjectId(args.charcter)}, {$set:{'characters.$.position': args.position}})//positional operator "$" makes sure the mutation happens to the corrent object in the array
+            await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}})//positional operator "$" makes sure the mutation happens to the corrent object in the array
             const payload = await Session.findById(args.session).populate('characters.character')
             pubsub.publish('SESSION_UPDATED', {payload})
+            return "done"
         }
     },
 
