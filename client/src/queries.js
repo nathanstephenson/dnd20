@@ -193,3 +193,11 @@ export const getRaces = gql`
     }
   }
 `;
+
+export const onSessionUpdated = gql`
+  subscription sessionUpdated($id:String){
+    sessionUpdated(id:$id){
+      campaign
+    }
+  }
+`;
