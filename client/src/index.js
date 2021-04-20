@@ -10,12 +10,12 @@ import {getMainDefinition} from '@apollo/client/utilities'
 import {WebSocketLink} from '@apollo/client/link/ws'
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:8080/subscriptions',
+  uri: 'ws://localhost:8080/graphql',
   options: {reconnect:true}
 })
 
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql'
+  uri: 'http://localhost:8080/graphql'
 });
 
 const splitLink = split(({query})=>{
@@ -25,12 +25,9 @@ const splitLink = split(({query})=>{
   )
 }, wsLink, httpLink)
 
-/*
-const PORT = ':8080';
-const HOST = '192.169.0.49';*/
+
 //create apollo client
 export const apolloClient = new ApolloClient({
-  uri: '/graphql',//this is only the extension to the current url to send gql requests to
   link: splitLink,
   cache: new InMemoryCache(),
   onError: ({ networkError, graphQLErrors }) => {

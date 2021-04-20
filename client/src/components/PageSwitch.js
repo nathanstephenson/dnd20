@@ -7,6 +7,8 @@ import '../App.css';
 import Home from '../pages/Home';
 import Campaigns from '../pages/Campaigns';
 import Characters from '../pages/Characters'
+import Play from '../pages/Play'
+import MyAccount from '../pages/MyAccount'
 
 function PageSwitch(props){
     return (
@@ -15,6 +17,8 @@ function PageSwitch(props){
                 <Route exact path='/' component={Home}/>
                 <Route exact path='/Campaigns' component={Campaigns}/>
                 <Route exact path='/Characters' component={Characters}/>
+                <Route exact path='/Play' component={Play}/>
+                <Route exact path='/MyAccount' component={MyAccount}/>
             </Switch>
         </header>
     );

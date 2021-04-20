@@ -15,10 +15,10 @@ export default function NavBar(props){
     var characters = <Link to="/Characters" className="navLink">
             <p> Characters </p>
         </Link>
-    var play = <Link className="navLink">
+    var play = <Link to="/Play" className="navLink">
             <p> Play </p>
         </Link>
-    var account = <Link className="navLink">
+    var account = <Link to="/MyAccount" className="navLink">
             <p> My Account </p>
         </Link>
     var links = [home, campaigns, characters, play, account]
