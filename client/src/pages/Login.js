@@ -4,7 +4,7 @@ import '../App.css';
 import Register from './Register';
 import {getUserID} from '../queries'
 
-function Login(props) {
+export default function Login(props) {
     const [id, setID] = useState(null)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -54,7 +54,7 @@ function Login(props) {
     )
 }
 
-/* class Login extends React.Component {//this isn't persistent over refreshes (cached) but i dont really want that rn
+/* class Login extends React.Component {//old version (class)
     
     constructor(props) {
         super(props);
@@ -109,7 +109,7 @@ function Login(props) {
                         </label><br />
                         <input type="submit" value="Submit" variant="outlined"/>
                         <label htmlFor="rememberLogin"> Remember me
-                            <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}/>---------not implemented yet, checkbox doesnt even return anything on submit
+                            <input type="checkbox" id="rememberLogin" name="rememberLogin" value={this.state.loggedIn}//not implemented yet, checkbox doesnt even return anything on submit
                         </label>
                     </form>
                     <button name="next2" variant="outlined" onClick={this.NotRegistered}>
@@ -123,5 +123,3 @@ function Login(props) {
         )
     }
 } */
-
-export default Login;
