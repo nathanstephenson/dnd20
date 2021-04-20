@@ -1,4 +1,4 @@
-const { PubSub, withFilter } = require('graphql-subscriptions');
+const { PubSub, withFilter } = require('apollo-server-express');
 const { resetCaches } = require('graphql-tag');
 const Mongoose = require('mongoose');
 const apiSchema = require('./apiSchema');
@@ -153,16 +153,17 @@ const resolvers = {
         async changeCharacterPos(root, args, context){
             await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}})//positional operator "$" makes sure the mutation happens to the corrent object in the array
             const payload = await Session.findById(args.session).populate('characters.character')
-            pubsub.publish('SESSION_UPDATED', {payload})
+            await pubsub.publish('SESSION_UPDATED', {payload})
             return "done"
         }
     },
 
     Subscription: {
         sessionUpdate: {
-            subscribe: withFilter(() => pubsub.asyncIterator(['SESSION_UPDATED']),
-                (payload, variables)=>{
-                    return (payload.changeCharacterPos.campaign===Mongoose.Types.ObjectId(variables.campaign))
+            subscribe: withFilter(() => pubsub.asyncIterator('SESSION_UPDATED'),
+                (payload, args)=>{
+                    console.log("sessionUpdate", payload)
+                    return (payload._id===args.id)
                 }
             )
         },

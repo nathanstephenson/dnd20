@@ -4,8 +4,10 @@ const publicPath = path.join(__dirname, '..', 'client');
 //express server
 const express = require(`express`);
 const app = express();
+const http = require('http')
 //apollo server and mongodb connection
 const { ApolloServer, gql, makeExecutableSchema, AuthenticationError } = require('apollo-server-express');
+const {SubscriptionServer} = require('subscriptions-transport-ws')
 const Mongoose = require('mongoose');
 Mongoose.set('useFindAndModify', false);
 const schema = require('./database/schema');
@@ -15,7 +17,7 @@ const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopo
 });//connect to mongoDB with mongoose
 const itemsAPI = require('./database/datasources/itemsAPI');
 const characterAPI = require('./database/datasources/characterAPI');
-
+/*const {  execute, subscribe  } = require('graphql')*/
 
 const server = new ApolloServer({ schema: schema,
     context: mongo,
@@ -25,22 +27,18 @@ const server = new ApolloServer({ schema: schema,
             characterAPI: new characterAPI(),
         };
     },
-    subscriptions: {
-        path: '/subscriptions'
-    },
     tracing: true,
 });
+
 //connect the apollo server to express and serve the react app
-server.applyMiddleware({ app });
+server.applyMiddleware({ app, cors: true });
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
-/*this doesnt seem to be doing anything
-app.use('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
-*/
+
+const httpServer = http.createServer(app)
+server.installSubscriptionHandlers(httpServer)
 
 //notification that the express server is up with apollo
-app.listen(port, () => {
+httpServer.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });
