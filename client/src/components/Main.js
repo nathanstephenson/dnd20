@@ -9,7 +9,6 @@ import PageSwitch from './PageSwitch'
 
 export default function Main(props){
 
-
 	const {loading, data, error, refetch, networkStatus} = useQuery(getUserByID, {variables:{id:props.id}, notifyOnNetworkStatusChange:true, fetchPolicy:'network-only'});
 	
 	while(networkStatus===NetworkStatus.refetch){
