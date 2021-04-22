@@ -194,10 +194,31 @@ export const getRaces = gql`
   }
 `;
 
-export const onSessionUpdated = gql`
-  subscription sessionUpdated($id:String){
-    sessionUpdated(id:$id){
-      campaign
+export const onSessionUpdate = gql`
+  subscription onSessionUpdate($id:String){
+    sessionUpdate(id:$id){
+      _id
+      position
+      characters{
+        _id
+        position
+        character{
+          user
+          campaign
+          name
+          race
+          background
+          class
+          level
+          hp
+          cha
+          con
+          dex
+          int
+          str
+          wis
+        }
+      }
     }
   }
 `;
