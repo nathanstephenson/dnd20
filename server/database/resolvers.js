@@ -150,10 +150,10 @@ const resolvers = {
                 characters: characters
             })
         },
+        //play screen
         async changeCharacterPos(root, args, context){
-            await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}})//positional operator "$" makes sure the mutation happens to the corrent object in the array
-            const payload = await Session.findById(args.session).populate('characters.character')
-            await pubsub.publish('SESSION_UPDATED', {payload})
+            const payload = await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}}, {new:true}).populate('characters.character')//positional operator "$" makes sure the mutation happens to the corrent object in the array
+            await pubsub.publish('SESSION_UPDATED', payload)
             return "done"
         }
     },
@@ -162,10 +162,12 @@ const resolvers = {
         sessionUpdate: {
             subscribe: withFilter(() => pubsub.asyncIterator('SESSION_UPDATED'),
                 (payload, args)=>{
-                    console.log("sessionUpdate", payload)
-                    return (payload._id===args.id)
+                    return (String(payload._id)===args.id)//pushes subscription to client if their sessionID is the same as the updated one
                 }
-            )
+            ),
+            resolve: (payload, args) => {
+                return payload;
+          },
         },
     }
 };
