@@ -54,18 +54,6 @@ function LoadCharacter(props){
     }
 }
 
-function DeleteCharacter(props){
-    const [del, {loading, data}] = useMutation(deleteCharacter)
-    while(loading){
-        return(<p>loading...</p>)
-    }
-    if(data===undefined){
-        del({variables:{character:props.characterID, user:props.userID, campaign:props.campaignID}})
-    }else if(data!==null){
-        props.back()
-    }return null
-}
-
 function CharacterInfo(props){
     console.log('character info', props.new)
     const {loading:raceLoading, data:raceData} = useQuery(getRaces)
