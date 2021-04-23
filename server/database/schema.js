@@ -31,6 +31,7 @@ const typeDefs = gql`
         dm: ID
         players: [ID]
         characters: [Character]
+        currentSession: ID
     }
 
     type APIReference {
@@ -78,6 +79,7 @@ const typeDefs = gql`
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
         abilityScores: [AbilityScore]
+        session(id:String):Session
     }
 
     type Mutation {
@@ -92,6 +94,7 @@ const typeDefs = gql`
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
         createSession(campaign:String):Session
         changeCharacterPos(session:String, character:String, position:Int):String
+        changeCharacterHealth(session:String, character:String, hp:Int):String
     }
 
     type Subscription {

@@ -1,26 +1,51 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useSubscription, Subscription } from '@apollo/client';
+import { useSubscription, Subscription, useQuery } from '@apollo/client';
 import '../App.css';
 import {UserContext} from '../misc/UserContext'
-import {getUserID, onSessionUpdate} from '../queries'
+import {currentSession, getUserID, onSessionUpdate} from '../queries'
+import {PartyCharacters} from '../components/play/party'
+import {DisplayCampaigns} from '../components/campaigns/DisplayCampaigns'
 
 export default function Play(props) {
     const {user} = useContext(UserContext)
-    const {data, loading} = useSubscription(onSessionUpdate, {variables:{id:"607c9a112717dc18fcbc68bc"}})
-    
+    const [selected, changeSelected] = useState(null)
+    const [needsRefresh, setNeedsRefresh] = useState(false)
+    const [needsRefetch, setNeedsRefetch] = useState(true)
+
+    return (<header className="App-header">
+        {selected!==null ? <PlayView sessionID={selected} needsRefetch={needsRefetch} refetched={()=>{setNeedsRefetch(false)}}/> : <DisplayCampaigns needsRefresh={needsRefresh} refreshed={()=>{setNeedsRefresh(true)}} changeSelected={changeSelected} purpose="Play"/>}
+    </header>)
+}
+
+function PlayView(props){
+    const{data:queryData, loading:queryLoading, refetch} = useQuery(currentSession, {variables:{id:props.sessionID}})
+    const {data:updateData, loading:updateLoading} = useSubscription(onSessionUpdate, {variables:{id:props.sessionID}})
+    const [data, changeData] = useState(undefined)
+
     useEffect(()=>{
-        if(loading){
-            console.log("loading")
+        if(props.needsRefetch){
+            refetch()
+            props.refetched()
         }
-        if(data!==undefined){
-            console.log(data)
+        if(updateData===undefined){
+            if(queryLoading){
+                console.log("loading")
+            }
+            if(queryData!==undefined){
+                console.log(queryData.session)
+                changeData(queryData.session)
+            }
+        }else{
+            console.log(updateData.sessionUpdate)
+            changeData(updateData.sessionUpdate)
         }
-    }, [loading, data, props])
+    }, [queryLoading, queryData, updateLoading, updateData, refetch, props])
 
     return (
-        
-        <header className="App-header">
+        <>
             <h2>Play the game</h2>
-        </header>
+            {data!==undefined ? <PartyCharacters session={data}/> : <p>No characters in this party.</p>}
+        </>
     )
 }
+

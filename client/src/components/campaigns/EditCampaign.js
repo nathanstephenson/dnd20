@@ -1,8 +1,8 @@
 import React, {useContext} from 'react';
 import {useMutation, useQuery} from '@apollo/client'
-import '../App.css';
-import {UserContext} from '../misc/UserContext'
-import {getCampaign, renameCampaign, deleteCampaign} from '../queries'
+import '../../App.css';
+import {UserContext} from '../../misc/UserContext'
+import {getCampaign, renameCampaign, deleteCampaign} from '../../queries'
 
 export default class EditCampaign extends React.Component {
     constructor(props) {

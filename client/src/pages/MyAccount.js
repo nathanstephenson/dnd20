@@ -8,8 +8,8 @@ export default function MyAccount(props) {
     const {user} = useContext(UserContext)
 
     return (
-        <header className="App-header">
+        <>
 
-        </header>
+        </>
     )
 }

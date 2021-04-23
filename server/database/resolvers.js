@@ -40,6 +40,9 @@ const resolvers = {
         character(root, args, context){
             return Character.findOne({_id:Mongoose.Types.ObjectId(args.id)});
         },
+        session(root, args, context){
+            return Session.findById(args.id).populate('characters.character')
+        },
         //---------------5eAPI queries, async because api returns promise
         async classes(root,args,{dataSources}){
             return await dataSources.characterAPI.getClasses()
@@ -155,6 +158,12 @@ const resolvers = {
             const payload = await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}}, {new:true}).populate('characters.character')//positional operator "$" makes sure the mutation happens to the corrent object in the array
             await pubsub.publish('SESSION_UPDATED', payload)
             return "done"
+        },
+        async changeCharacterHealth(root, args, context){
+            await Character.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.character)}, {$set: {hp: args.hp}}, {new:true})//positional operator "$" makes sure the mutation happens to the corrent object in the array
+            const payload = await Session.findOne({_id: Mongoose.Types.ObjectId(args.session)}).populate('characters.character')
+            await pubsub.publish('SESSION_UPDATED', payload)
+            return "done"
         }
     },
 
@@ -165,9 +174,7 @@ const resolvers = {
                     return (String(payload._id)===args.id)//pushes subscription to client if their sessionID is the same as the updated one
                 }
             ),
-            resolve: (payload, args) => {
-                return payload;
-          },
+            resolve: (payload) => { return payload },
         },
     }
 };

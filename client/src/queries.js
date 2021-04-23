@@ -43,6 +43,7 @@ export const getUserByID = gql`
         _id
         name
         dm
+        currentSession
       }
       characters{
         _id
@@ -70,6 +71,7 @@ export const currentUser = gql`
         _id
         name
         dm
+        currentSession
       }
     }
   }
@@ -194,17 +196,42 @@ export const getRaces = gql`
   }
 `;
 
-export const onSessionUpdate = gql`
-  subscription onSessionUpdate($id:String){
-    sessionUpdate(id:$id){
-      _id
-      position
+export const currentSession = gql`
+  query currentSession($id:String){
+    session(id:$id){
+      campaign
       characters{
         _id
         position
         character{
           user
-          campaign
+          name
+          race
+          background
+          class
+          level
+          hp
+          cha
+          con
+          dex
+          int
+          str
+          wis
+        }
+      }
+    }
+  }
+`;
+
+export const onSessionUpdate = gql`
+  subscription onSessionUpdate($id:String){
+    sessionUpdate(id:$id){
+      campaign
+      characters{
+        _id
+        position
+        character{
+          user
           name
           race
           background

@@ -2,8 +2,9 @@ import React, { useContext } from 'react';
 import '../App.css';
 import {useMutation} from '@apollo/client';
 import {UserContext} from '../misc/UserContext';
-import EditCampaign from '../components/EditCampaign'
+import EditCampaign from '../components/campaigns/EditCampaign'
 import {addCampaign} from '../queries'
+import {DisplayCampaigns} from '../components/campaigns/DisplayCampaigns'
 
 export default class Campaigns extends React.Component {
 
@@ -69,7 +70,7 @@ export default class Campaigns extends React.Component {
                             <input type="submit" value="Submit"/>
                             <button onClick={this.cancelNew}>x</button>
                         </form></>}<br/><br/>
-                    <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/>
+                    <DisplayCampaigns needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected} purpose="Edit"/>
                     {(this.state.wantsNew && this.state.newSubmitted) && <AddCampaign dm={user._id} name={this.state.newName} handleAdded={this.resetWithNew}/>}
                 </>}
                 {this.state.chosen && <EditCampaign currentUserID={user._id} campaignID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
@@ -78,17 +79,13 @@ export default class Campaigns extends React.Component {
     }
 }
 
-export function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
+/* export function DisplayCampaigns(props){//need to render the Campaign function for as many as there are in campaigns collection
     const {user, refreshUser} = useContext(UserContext)
     if(props.needsRefresh){
         refreshUser()
         props.refreshed()
     }
-    const campaignList = []
-    campaignList.push()
-    for (let i = 0; i<user.campaigns.length; i++){//adds jsx elemnts to the array
-        campaignList.push(<Campaign campaign={user.campaigns[i]} changeSelected={props.changeSelected}/>)
-    }
+    const campaignList = user.campaigns.map((currentValue, index)=>{return <Campaign key={index} campaign={currentValue} changeSelected={props.changeSelected}/>})
     return (
         <>
             {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
@@ -108,7 +105,7 @@ function Campaign(props){
             </li></ul>
         </div>
     )
-}
+} */
 
 function AddCampaign(props){//here we just pray that no 2 campaigns have the same id (unlikely as it is 24-char hex)
     console.log("adding")
