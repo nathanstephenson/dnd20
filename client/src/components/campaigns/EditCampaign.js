@@ -13,7 +13,8 @@ export default class EditCampaign extends React.Component {
         this.delete = this.delete.bind(this)
         this.submitted = this.submitted.bind(this)
         this.returnCampaign = this.returnCampaign.bind(this)
-        this.state = {submit:false, delete:false, loaded:false, campaign:null, name:""}
+        this.toggleID = this.toggleID.bind(this)
+        this.state = {submit:false, delete:false, loaded:false, campaign:null, name:"", showID:false}
     }
 
     handleNameChange(e){
@@ -39,6 +40,10 @@ export default class EditCampaign extends React.Component {
         this.setState({campaign:campaign, name:campaign.name, loaded:true})
     }
 
+    toggleID(){
+        this.setState({showID:!this.state.showID})
+    }
+
     render() {
         if(this.campaignID != null){
             let isDM = false
@@ -52,8 +57,9 @@ export default class EditCampaign extends React.Component {
                     </div>}
                     {(this.state.loaded && !this.state.submit) && <div><img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
                         <h1 className="title">
-                            Edit Campaign
+                            Edit Campaign 
                         </h1>
+                        {this.state.showID ? <><p>{this.campaignID}<button onClick={this.toggleID}>x</button></p></> : <button onClick={this.toggleID}>Show ID</button>}
                         <button onClick={this.delete}>Delete this campaign</button>
                         <form className="Form" onSubmit={this.submit}>
                             {isDM && <div><label htmlFor="name" className="tbLabel">Campaign Name: 

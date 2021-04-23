@@ -1,8 +1,8 @@
 import React from 'react';
 import {NetworkStatus, useQuery} from '@apollo/client';
-import {UserContext} from '../misc/UserContext'
-import {getUserByID} from '../queries';
-import '../App.css';
+import {UserContext} from '../../misc/UserContext'
+import {getUserByID} from '../../queries';
+import '../../App.css';
 import NavBar from './navbar'
 import PageSwitch from './PageSwitch'
 

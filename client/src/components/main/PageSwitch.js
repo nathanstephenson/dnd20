@@ -3,12 +3,12 @@
  */
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import '../App.css';
-import Home from '../pages/Home';
-import Campaigns from '../pages/Campaigns';
-import Characters from '../pages/Characters'
-import Play from '../pages/Play'
-import MyAccount from '../pages/MyAccount'
+import '../../App.css';
+import Home from '../../pages/Home';
+import Campaigns from '../../pages/Campaigns';
+import Characters from '../../pages/Characters'
+import Play from '../../pages/Play'
+import MyAccount from '../../pages/MyAccount'
 
 function PageSwitch(props){
     return (
