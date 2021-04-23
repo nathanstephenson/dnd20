@@ -91,6 +91,11 @@ const resolvers = {
                 dm: Mongoose.Types.ObjectId(args.dm),
             })
         },
+        async joinCampaign(root, args, context){
+            await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{campaigns:Mongoose.Types.ObjectId(args.id)}})
+            await Campaign.findById(args.id)
+            return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}})
+        },
         async deleteCampaign(root, args, context){
             if(args.user === args.dm){//all args here are IDs
                 await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.dm)}, {$pull:{campaigns:args.campaign}})
@@ -104,7 +109,12 @@ const resolvers = {
         async addCharacter(root, args, context){
             const newID = Mongoose.Types.ObjectId()
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{characters:newID}})
-            await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$addToSet:{characters:newID}})
+            const campaign = await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$addToSet:{characters:newID}})
+            await Session.findByIdAndUpdate(campaign.currentSession, {$addToSet:{characters:{
+                _id: newID,
+                character: newID,
+                position: 0,
+            }}})
             return await Character.create({
                 _id: newID,
                 user: Mongoose.Types.ObjectId(args.user),
@@ -130,7 +140,8 @@ const resolvers = {
         },
         async deleteCharacter(root, args, context){
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$pull:{characters:args.character}})
-            await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$pull:{characters:args.character}})
+            const campaign = await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$pull:{characters:args.character}})
+            await Session.findOneAndUpdate({_id: campaign.currentSession}, {$pull: {characters:{_id: args.character}}})
             await Character.findByIdAndDelete(args.character)
             return "ran character deletion"
         },

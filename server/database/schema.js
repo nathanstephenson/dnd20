@@ -86,6 +86,7 @@ const typeDefs = gql`
         addUser(name:String, email:String, username:String, password:String): User
         clearUsers:String
         addCampaign(dm:String, name:String): Campaign
+        joinCampaign(id:String!, user:String!):Campaign
         deleteCampaign(user:String, dm:String, campaign:String): String
         renameCampaign(id:String, name:String): Campaign
         addCharacter(user:String, campaign:String, name:String, race:String, background:String): Character
