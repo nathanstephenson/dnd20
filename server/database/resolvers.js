@@ -92,6 +92,7 @@ const resolvers = {
             })
         },
         async joinCampaign(root, args, context){
+            //need to wipe character from other campaigns and sessions before this
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{campaigns:Mongoose.Types.ObjectId(args.id)}})
             await Campaign.findById(args.id)
             return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}})

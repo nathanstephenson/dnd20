@@ -1,9 +1,9 @@
 import React, {useContext, useState} from 'react'
 import {useQuery, useMutation} from '@apollo/client'
 import '../App.css'
-import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../queries'
-import { arrayToOptions } from '../functions/GeneralFunctions'
-import { UserContext } from '../misc/UserContext'
+import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
+import { arrayToOptions } from '../../functions/GeneralFunctions'
+import { UserContext } from '../../misc/UserContext'
 
 export default class EditCharacter extends React.Component {
 
