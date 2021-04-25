@@ -48,20 +48,3 @@ export default function Campaiagns(props) {
         {chosen && <EditCampaign currentUserID={user._id} campaignID={selected} submit={()=>{}} back={()=>{changeSelected(null);changeChosen(false);changeNeedsRefresh(true)}}/>}
     </>)
 }
-
-function AddCampaign(props){//here we just pray that no 2 campaigns have the same id (unlikely as it is 24-char hex)
-    console.log("adding")
-    const {user:currentUser} = useContext(UserContext)
-    const [newCampaign, { data, loading }] = useMutation(addCampaign);//this method means it only gets added once
-	while(loading){
-		return(<p>Loading...</p>);
-	}
-    if(data===undefined){
-        newCampaign({variables:{dm:currentUser._id, name:props.name}})
-        console.log('attempted addCampaign')
-    }else if(data != null){
-        console.log('done', data)
-        props.handleAdded(data.addCampaign._id)
-    }
-    return null
-}
