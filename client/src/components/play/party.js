@@ -1,10 +1,16 @@
-import React from 'react'
+import { useMutation } from '@apollo/client'
+import React, { useContext } from 'react'
+import { UserContext } from '../../misc/UserContext'
+import { changeCharacterHealth } from '../../queries'
 
 export function PartyCharacters(props){
+    const {user} = useContext(UserContext)
     const session = props.session
-    const partyCharacters = session.characters.map((currentValue, index)=>{return <CharacterInfo key={index} character={currentValue.character}/>})
+    const myCharacter = session.characters.map((currentValue, index)=>{if(currentValue.character.user===user._id){return <CharacterInfo key={index} character={currentValue} sessionID={session._id} currentUser={user._id}/>}})
+    const partyCharacters = session.characters.map((currentValue, index)=>{if(currentValue.character.user!==user._id){return <CharacterInfo key={index} character={currentValue} sessionID={session._id} currentUser={user._id}/>}})
     return (
         <>
+            {myCharacter}
             {(session.characters.length===0) && <p>No characters in this party.</p>}
             {(session.characters.length!==0) && partyCharacters}
         </>
@@ -12,12 +18,18 @@ export function PartyCharacters(props){
 }
 
 function CharacterInfo(props){
-    const character = props.character
-
+    const character = props.character.character
+    const [changeHealth, {data}] = useMutation(changeCharacterHealth, {variables:{session:props.sessionID, character:props.character._id}})
     return (<div className="campaign">
         <p key="c1" className="campaign-name">{character.name}</p>
-        <ul><li key="hp">
-            <p>{character.hp}</p>
-        </li></ul>
+        <ul>
+            <li key="hp">
+                <p>{character.hp}</p>
+                {character.user===props.currentUser && <>
+                    <button onClick={()=>{changeHealth({variables:{hp:character.hp+1}})}}>+</button>
+                    <button onClick={()=>{changeHealth({variables:{hp:character.hp-1}})}}>-</button>
+                </>}
+            </li>
+        </ul>
     </div>)
 }

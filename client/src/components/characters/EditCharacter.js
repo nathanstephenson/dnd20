@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react'
 import {useQuery, useMutation} from '@apollo/client'
-import '../App.css'
+import '../../App.css'
 import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
 import { arrayToOptions } from '../../functions/GeneralFunctions'
 import { UserContext } from '../../misc/UserContext'
@@ -28,7 +28,6 @@ export default class EditCharacter extends React.Component {
     }
 
     render(){
-        console.log(this.state.name, this.state.race, this.state.campaign, this.state.bg)
         return(<>
             <button className="backButton" onClick={this.props.back}>Back</button>{/* vvv unloaded and unentered*/}
             {/* ((this.characterID!==null)&&(this.state.character===null)) ? <LoadCharacter ID={this.characterID} return={this.returnLoaded}/> : <CharacterInfo submitNewGeneral={this.submitNewGeneral} user={this.user} character={this.state.character} new={this.state.character===null}/> */}

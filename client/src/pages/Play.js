@@ -4,7 +4,7 @@ import '../App.css';
 import {UserContext} from '../misc/UserContext'
 import {currentSession, getUserID, onSessionUpdate} from '../queries'
 import {PartyCharacters} from '../components/play/party'
-import {DisplayCampaigns} from '../components/campaigns/DisplayCampaigns'
+import { DisplayCharacters } from '../components/characters/DisplayCharacters';
 
 export default function Play(props) {
     const {user} = useContext(UserContext)
@@ -13,7 +13,7 @@ export default function Play(props) {
     const [needsRefetch, setNeedsRefetch] = useState(true)
 
     return (<header className="App-header">
-        {selected!==null ? <PlayView sessionID={selected} needsRefetch={needsRefetch} refetched={()=>{setNeedsRefetch(false)}}/> : <DisplayCampaigns needsRefresh={needsRefresh} refreshed={()=>{setNeedsRefresh(true)}} changeSelected={changeSelected} purpose="Play"/>}
+        {selected!==null ? <PlayView sessionID={selected} needsRefetch={needsRefetch} refetched={()=>{setNeedsRefetch(false)}}/> : <DisplayCharacters needsRefresh={needsRefresh} refreshed={()=>{setNeedsRefresh(true)}} changeSelected={changeSelected} purpose="Play"/>}
     </header>)
 }
 

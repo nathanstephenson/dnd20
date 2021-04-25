@@ -9,15 +9,16 @@ import {ApolloClient, ApolloProvider, InMemoryCache, split, HttpLink} from '@apo
 import {getMainDefinition} from '@apollo/client/utilities'
 import {WebSocketLink} from '@apollo/client/link/ws'
 
+console.log(window.location)
+
+//from Apollo docs
 const wsLink = new WebSocketLink({
-  uri: 'ws://localhost:8080/graphql',
+  uri: `ws://${window.location.hostname}:8080/graphql`,
   options: {reconnect:true}
 })
-
 const httpLink = new HttpLink({
-  uri: 'http://localhost:8080/graphql'
+  uri: `http://${window.location.hostname}:8080/graphql`
 });
-
 const splitLink = split(({query})=>{
   const definition = getMainDefinition(query)
   console.log(definition.kind === 'OperationDefinition' && definition.operation === 'subscription')

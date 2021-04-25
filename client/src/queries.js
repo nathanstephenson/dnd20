@@ -48,6 +48,7 @@ export const getUserByID = gql`
       characters{
         _id
         name
+        campaign
       }
     }
   }
@@ -196,9 +197,25 @@ export const getRaces = gql`
   }
 `;
 
+export const currentSessionID = gql`
+  query currentSessionID($campaign:String){
+    getCurrentSessionID(campaign:$campaign)
+  }
+`;
+
+
+//gameplay
+
+export const changeCharacterHealth = gql`
+  mutation changeCharacterHealth($session:String, $character:String, $hp:Int){
+    changeCharacterHealth(session:$session, character:$character, hp:$hp)
+  }
+`;
+
 export const currentSession = gql`
   query currentSession($id:String){
     session(id:$id){
+      _id
       campaign
       characters{
         _id
@@ -226,6 +243,7 @@ export const currentSession = gql`
 export const onSessionUpdate = gql`
   subscription onSessionUpdate($id:String){
     sessionUpdate(id:$id){
+      _id
       campaign
       characters{
         _id

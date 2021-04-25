@@ -43,7 +43,7 @@ export default class Characters extends React.Component {
                 <h1 className="title"> Characters </h1>
                 {!this.state.chosen && <>
                     <button onClick={this.wantsNew}>New Character</button>
-                    <DisplayCharacters needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected}/> 
+                    <DisplayCharacters needsRefresh={this.state.needsRefresh} refreshed={this.refreshed} changeSelected={this.changeSelected} purpose="Edit"/> 
                 </>}
                 {this.state.chosen && <EditCharacter currentUser={user} characterID={this.state.selected} submit={this.handleEditSubmit} back={this.clearSelected}/>}
             </>

@@ -79,6 +79,7 @@ const typeDefs = gql`
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
         abilityScores: [AbilityScore]
+        getCurrentSessionID(campaign:String): String
         session(id:String):Session
     }
 
