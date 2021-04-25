@@ -9,7 +9,7 @@ const http = require('http')
 const { ApolloServer, gql, makeExecutableSchema, AuthenticationError } = require('apollo-server-express');
 const {SubscriptionServer} = require('subscriptions-transport-ws')
 const Mongoose = require('mongoose');
-Mongoose.set('useFindAndModify', false);
+Mongoose.set('useFindAndModify', false);//makes Mongoose use findOneAndUpdate instead of findOneAndModify on MongoDB queries
 const schema = require('./database/schema');
 const mongouri = "mongodb+srv://dbadmin:2Vgv29KMGrHGFZIO@cluster0.g5wfg.mongodb.net/dnd20?retryWrites=true&w=majority";
 const mongo = Mongoose.connect(mongouri, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
@@ -35,10 +35,11 @@ server.applyMiddleware({ app, cors: true });
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
 
+//create designated HTTP server on the express instance so that subscriptions can be enabled over WS
 const httpServer = http.createServer(app)
 server.installSubscriptionHandlers(httpServer)
 
-//notification that the express server is up with apollo
+//notification that the HTTP server is up with apollo
 httpServer.listen(port, () => {
     console.log(`server is up on port ${port}${server.graphqlPath}!`);
 });

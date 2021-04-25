@@ -6,7 +6,7 @@ class characterAPI extends RESTDataSource {
         this.baseURL = 'https://www.dnd5eapi.co/'
     }
 
-    async expandAPIRef(array){
+    async expandAPIRef(array){ //needs convert to map function instead
         let newarray = []
         for await(let element of array) {
             let expanded = await this.get(element.url)

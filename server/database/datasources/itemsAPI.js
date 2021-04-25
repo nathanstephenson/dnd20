@@ -18,9 +18,5 @@ class itemsAPI extends RESTDataSource {
         const results = await this.get(`magic-items/${index}`)
         return results
     }
-    async getAny(any){//meant for submitting longer strings
-        const results = await this.get(`${any}`)
-        return results
-    }
 }
 module.exports = itemsAPI;

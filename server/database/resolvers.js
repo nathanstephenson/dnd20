@@ -12,22 +12,15 @@ const pubsub = new PubSub()//only works for a single server instance, so would n
 const resolvers = {
     Query: {
         users(root, args, context){
-            //if(!context.user || !context.user.permissions>=2)
             return User.find().populate('campaigns');
         },
         user(root, args, context){
-            //if (!context.user) {return null};
-            //return User.findOne({username: args.username, password: args.password}).populate('characters').populate('campaigns');
             return User.findById(args.id).populate('characters').populate('campaigns');
         },
         async getUserID(root, args, context){
             const user = await User.findOne({username: args.username, password: args.password})
             return user._id
         },
-        /* userByID(root, args, context){//maybe we dont want this? or maybe can limit returns?
-            //if (!context.user) {return null};
-            return User.findOne({_id:Mongoose.Types.ObjectId(args.id)});
-        }, */
         campaigns(root, args, context){
             return Campaign.find().populate('characters');
         },
@@ -39,6 +32,10 @@ const resolvers = {
         },
         character(root, args, context){
             return Character.findOne({_id:Mongoose.Types.ObjectId(args.id)});
+        },
+        async getCurrentSessionID(root, args, context){
+            const campaign = await Campaign.findOne({_id:Mongoose.Types.ObjectId(args.campaign)});
+            return campaign.currentSession;
         },
         session(root, args, context){
             return Session.findById(args.id).populate('characters.character')
@@ -68,7 +65,7 @@ const resolvers = {
     },
 
     Mutation: {
-        addUser(root, args, context){//works, but multiple times
+        addUser(root, args, context){
             return User.create({
                 _id: Mongoose.Types.ObjectId(),
                 name: args.name,
