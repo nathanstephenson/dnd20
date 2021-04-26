@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {useQuery, useMutation} from '@apollo/client'
 import '../../App.css'
 import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
@@ -81,14 +81,25 @@ function NewGeneralInfo(props){
     const [background, changeBG] = useState("")
     const [race, changeRace] = useState("")
     const [campaign, changeCampaign] = useState("")
-    const [createNew, {loading:newLoading, data:newData}] = useMutation(addCharacter, {variables:{user:user._id, campaign:campaign, name:name, race:race, background:background}})
+    const [createNew, {loading:newLoading, data:newData}] = useMutation(addCharacter)
+    console.log(user.campaigns)
+    useEffect(()=>{
+        if (user.campaigns[0]!==undefined){
+            console.log(user.campaigns[0]._id)
+            changeCampaign(user.campaigns[0]._id)
+        }
+        if (props.races[0]!==undefined){
+            console.log(props.races[0].index)
+            changeRace(props.races[0].index)
+        }
+    },[props.races, user.campaigns])
     while(newLoading){
         return(<p>Loading...</p>)
     }
     if(newData!==undefined){
         props.back()
     }
-    return (<form onSubmit={createNew}>
+    return (<form onSubmit={()=>{console.log(user._id, campaign, name, race, background);createNew({variables:{user:user._id, campaign:campaign, name:name, race:race, background:background}})}}>
         <input type="submit" /><br/>
         <label htmlFor="name" className="tbLabel">Name: 
         <input type="name" id="name" name="name" required={true} onChange={(e)=>{e.preventDefault();changeName(e.target.value)}} value={name}/></label>
@@ -109,13 +120,19 @@ function ExistingGeneralInfo(props){
     const [con, changeCon] = useState(character.con)
     const [int, changeInt] = useState(character.int)
     const [wis, changeWis] = useState(character.wis)
-    const [cha, changeCha] = useState(character.cha)//need to implement for maximum levels etc, although maybe later
-    console.log(charClass)
+    const [cha, changeCha] = useState(character.cha)//need to implement for maximum levels etc.
     const [rename, toggleRename] = useState(false)
     const [name, changeName] = useState(character.name)
     const [delCharacter, {loading:delLoading, data:delData}] = useMutation(deleteCharacter, {variables:{character:character._id, user:character.user, campaign:character.campaign}})
     const [updateInfo, {loading:infoLoading, data:infoData}] = useMutation(updateCharacterInfo, {variables:{id:character._id, name:name, campaign:campaign}})
     const [updateStats, {loading:statsLoading, data:statsData}] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:parseInt(cha), con:parseInt(con), str:parseInt(str), dex:parseInt(dex), int:parseInt(int), wis:parseInt(wis)}})
+    
+    useEffect(()=>{//only runs once, because props.classes never changes
+        if (props.classes[0]!==undefined){
+            changeClass(props.classes[0].index)
+        }
+    },[props.classes])
+
     while(delLoading||infoLoading||statsLoading){
         if(delLoading){
             console.log(character._id, character.user, character.campaign)
@@ -158,7 +175,7 @@ function ClassSelect(props){
     let classOptions = arrayToOptions(props.classes, props.current)
     return(
         <label htmlFor="class" className="tbLabel">Class:
-            <select id="classes" name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}}>
+            <select id="classes" required={true} name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}}>
                 {classOptions}
             </select>
         </label>
@@ -169,8 +186,8 @@ function RaceSelect(props){
     const [selected, changeSelected] = useState(0)
     let raceOptions = arrayToOptions(props.races)
     return(
-        <div><label htmlFor="races" className="tbLabel">Race:
-            <select id="races" name="races" onChange={(e)=>{props.changeRace(props.races[e.target.selectedIndex].index); changeSelected(e.target.selectedIndex)}}>
+        <div><label htmlFor="races" required={true} className="tbLabel">Race:
+            <select id="races" name="races" selectedIndex="0" onChange={(e)=>{props.changeRace(props.races[e.target.selectedIndex].index); changeSelected(e.target.selectedIndex)}}>
                 {raceOptions}
             </select></label>
             <p>{props.races[selected].alignment}</p>
@@ -182,7 +199,7 @@ function CampaignSelect(props){
     const campaignOptions = arrayToOptions(props.campaigns, props.current)
     return(<>
         <label htmlFor="campaigns" className="tbLabel">Campaign:
-            <select id="campaigns" name="campaigns" onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}}>
+            <select id="campaigns" name="campaigns" selectedIndex="0" required={true} onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}}>
                 {campaignOptions}
             </select>
         </label>

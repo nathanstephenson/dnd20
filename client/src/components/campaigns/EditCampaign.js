@@ -50,7 +50,7 @@ export default class EditCampaign extends React.Component {
             if(this.state.campaign !== null){
                 isDM = (this.props.currentUserID===this.state.campaign.dm)
             }
-            return(//also need to add characters/users +/-
+            return(
                 <>
                     {(!this.state.loaded && !this.state.submit) && <div>
                         <LoadCampaign ID={this.campaignID} return={this.returnCampaign}/>

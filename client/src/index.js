@@ -19,7 +19,7 @@ const httpLink = new HttpLink({
 });
 const splitLink = split(({query})=>{
   const definition = getMainDefinition(query)
-  console.log(definition.kind === 'OperationDefinition' && definition.operation === 'subscription')
+  /* console.log(definition.kind === 'OperationDefinition' && definition.operation === 'subscription') */
   return (
     definition.kind === 'OperationDefinition' && definition.operation === 'subscription'//uses wsLink if subscription operation
   )
