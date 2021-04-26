@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {useQuery, useMutation} from '@apollo/client'
 import '../App.css';
 import { Link } from "react-router-dom";
@@ -77,36 +77,30 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.passsword}});//looking for existing user
+	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.password}}, {fetchPolicy:'network-only'});//looking for existing user
 	const [newUser, { data, loading }] = useMutation(addUser);
-	while(queryLoading){
-		return(<p>Checking for existing user...</p>)
-	}
-	if(queryData===null){//apparently here cannot read 'undefined' user, but that same method works in login???
-		console.log("user doesn't already exist")
-		while(loading){//warning about destructuring, but loading does show
-			return(<p>Loading...</p>);
-		}
-		if(data===undefined){
-			console.log("adding user")
-			newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});
-		}else if(data!=null){
-			console.log(data)
-			return(
-				<>
+	while (queryLoading||loading) {console.log("loading");return(<p>Loading...</p>)}
+	console.log(queryData.getUserID)
+	if(queryData!==undefined){
+		if(queryData.getUserID===null && !queryLoading){//apparently here cannot read 'undefined' user, but that same method works in login???
+			console.log("user doesn't already exist")
+			if(data===undefined){
+				console.log("adding user")
+				newUser({variables:{name:props.name, email:props.email, username:props.username, password:props.password}});
+			}else if(data!=null){
+				console.log(data)
+				return(<>
 					<p>Welcome, {props.name}</p>
-					<Link to="">
-						Go to Log In
-					</Link>
-				</>
+				</>);
+			}
+		}else if(queryData.getUserID!==null && !queryLoading){
+			console.log("user already exists", queryData.getUserID)
+			return (
+				<p>Error: User already exists, try again</p>
 			);
 		}
-	}if(queryData!==null){
-		console.log("user already exists", queryData, data)
-		return (
-			<p>Error: User already exists, try again</p>
-		);
 	}
+	return <p></p>
 }
 
 export default Register;

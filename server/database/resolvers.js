@@ -1,7 +1,5 @@
 const { PubSub, withFilter } = require('apollo-server-express');
-const { resetCaches } = require('graphql-tag');
 const Mongoose = require('mongoose');
-const apiSchema = require('./apiSchema');
 const Campaign = require('./models/campaign');
 const Character = require('./models/character');
 const Session = require('./models/session');
@@ -19,7 +17,7 @@ const resolvers = {
         },
         async getUserID(root, args, context){
             const user = await User.findOne({username: args.username, password: args.password})
-            return user._id
+            if(user!==null){return user._id}else{return undefined}
         },
         campaigns(root, args, context){
             return Campaign.find().populate('characters');
@@ -92,11 +90,30 @@ const resolvers = {
             //need to wipe character from other campaigns and sessions before this
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{campaigns:Mongoose.Types.ObjectId(args.id)}})
             await Campaign.findById(args.id)
-            return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}})
+            return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}}, {new:true})
+        },
+        async leaveCampaign(root, args, context){//needs work, doesnt remove user from campaign
+            const user = await User.findByIdAndUpdate(Mongoose.Types.ObjectId(args.user), {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}}).populate('characters')
+            Campaign.findByIdAndUpdate(args.campaign, {$pull:{players:Mongoose.Types.ObjectId(args.user)}})
+            await user.characters.forEach(element => {
+                console.log(typeof element._id, typeof Mongoose.Types.ObjectId(args.campaign))
+                if (String(element.campaign) === String(args.campaign)){
+                    Character.findByIdAndUpdate(element._id, {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}})
+                    Campaign.findByIdAndUpdate(args.campaign, {$pull:{characters:Mongoose.Types.ObjectId(String(element._id))}})
+                }
+            })
+            return "done"
         },
         async deleteCampaign(root, args, context){
+            const campaign = await Campaign.findById(args.campaign)
             if(args.user === args.dm){//all args here are IDs
-                await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.dm)}, {$pull:{campaigns:args.campaign}})
+                await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.dm)}, {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}})
+                await campaign.players.forEach(element => {
+                    User.findByIdAndUpdate(element, {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}})
+                })
+                await campaign.characters.forEach(element => {
+                    Character.findByIdAndUpdate(element, {$set:{campaign:null}})
+                })
                 await Campaign.findByIdAndDelete(args.campaign)
             }
             return "ran campaign deletion"
@@ -146,21 +163,29 @@ const resolvers = {
         async createSession(root, args, context){
             const newID = Mongoose.Types.ObjectId()
             const campaign = await Campaign.findById(args.campaign)
-            await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$addToSet: {campaignHistory:campaign.currentSession}})
-            await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$set: {currentSession:newID}})
-            const characters = []
-            for await (const character of campaign.characters){
-                characters.push({
-                    _id: Mongoose.Types.ObjectId(character._id),
-                    character: Mongoose.Types.ObjectId(character._id),
-                    position: 0,
+            if(String(args.user) === String(campaign.dm)){
+                await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$set: {currentSession:newID}})
+                const characters = []
+                for await (const character of campaign.characters){
+                    characters.push({
+                        _id: Mongoose.Types.ObjectId(character._id),
+                        character: Mongoose.Types.ObjectId(character._id),
+                        position: 0,
+                    })
+                }
+                return await Session.create({
+                    _id: newID,
+                    campaign: Mongoose.Types.ObjectId(args.campaign),
+                    characters: characters
                 })
             }
-            return await Session.create({
-                _id: newID,
-                campaign: Mongoose.Types.ObjectId(args.campaign),
-                characters: characters
-            })
+        },
+        async endSession(root, args, context){
+            const campaign = await Campaign.findById(args.campaign)
+            if(String(args.user) === String(campaign.dm)){
+                await Campaign.findByIdAndUpdate(args.campaign, {$addToSet:{sessionHistory:campaign.currentSession}, $set:{currentSession:null}})
+            }
+            return "done"
         },
         //play screen
         async changeCharacterPos(root, args, context){

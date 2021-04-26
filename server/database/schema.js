@@ -87,14 +87,16 @@ const typeDefs = gql`
         addUser(name:String, email:String, username:String, password:String): User
         clearUsers:String
         addCampaign(dm:String, name:String): Campaign
-        joinCampaign(id:String!, user:String!):Campaign
+        joinCampaign(id:String, user:String):Campaign
+        leaveCampaign(campaign:String, user:String):String
         deleteCampaign(user:String, dm:String, campaign:String): String
         renameCampaign(id:String, name:String): Campaign
         addCharacter(user:String, campaign:String, name:String, race:String, background:String): Character
         deleteCharacter(user:String, character:String, campaign:String):String
         updateCharacterInfo(id:String, name:String, campaign:String):Character
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
-        createSession(campaign:String):Session
+        createSession(campaign:String, user:String):Session
+        endSession(campaign:String, user:String):String
         changeCharacterPos(session:String, character:String, position:Int):String
         changeCharacterHealth(session:String, character:String, hp:Int):String
     }

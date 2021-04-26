@@ -7,7 +7,7 @@ export function DisplayCampaigns(props){//need to render the Campaign function f
         refreshUser()
         props.refreshed()
     }
-    const campaignList = user.campaigns.map((currentValue, index)=>{return <Campaign key={index} campaign={currentValue} changeSelected={props.changeSelected} purpose={props.purpose}/>})
+    const campaignList = user.campaigns.map((currentValue, index)=>{return <Campaign key={index} campaign={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user._id}/>})
     return (
         <>
             {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
@@ -17,6 +17,7 @@ export function DisplayCampaigns(props){//need to render the Campaign function f
 }
 
 function Campaign(props){
+    console.log(props.campaign.dm, props.currentUser)
     return (
         <div className="campaign">
             <p key="c1" className="campaign-name">{props.campaign.name}</p>

@@ -9,11 +9,9 @@ import {ApolloClient, ApolloProvider, InMemoryCache, split, HttpLink} from '@apo
 import {getMainDefinition} from '@apollo/client/utilities'
 import {WebSocketLink} from '@apollo/client/link/ws'
 
-console.log(window.location)
-
 //from Apollo docs
 const wsLink = new WebSocketLink({
-  uri: `ws://${window.location.hostname}:8080/graphql`,
+  uri: `ws://${window.location.hostname}:8080/graphql`,//just host, not hostname, for build version (to include port by default)
   options: {reconnect:true}
 })
 const httpLink = new HttpLink({

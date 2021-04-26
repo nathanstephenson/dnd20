@@ -104,6 +104,14 @@ export const addCampaign = gql`
   }
 `;
 
+export const joinExistingCampaign = gql`
+  mutation joinExistingCampaign($id:String, $user:String){
+      joinCampaign(id:$id, user:$user){
+        name
+      }
+  }
+`;
+
 export const deleteCampaign = gql`
   mutation deleteCampaign($user:String, $dm:String, $campaign:String){
     deleteCampaign(user:$user, dm:$dm, campaign:$campaign)
@@ -203,6 +211,19 @@ export const currentSessionID = gql`
   }
 `;
 
+export const createSession = gql`
+  mutation createSession($campaign:String, $user:String){
+    createSession(campaign:$campaign, user:$user){
+      _id
+    }
+  }
+`;
+
+export const endSession = gql`
+  mutation endSession($campaign:String, $user:String){
+    endSession(campaign:$campaign, user:$user)
+  }
+`;
 
 //gameplay
 
