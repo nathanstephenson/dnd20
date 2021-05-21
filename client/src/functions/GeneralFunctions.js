@@ -11,7 +11,7 @@ export function arrayToOptions(array, selected){
             }
         }else if (array[0]._id!==undefined){
             for (let i=0; i<array.length; i++){
-                if(array[i].index!==selected){
+                if(array[i]._id!==selected){
                     newArray.push(<option value={array[i]._id} key={i}>{array[i].name}</option>)
                 }else{
                     newArray.push(<option value={array[i]._id} key={i}>{array[i].name}</option>)
