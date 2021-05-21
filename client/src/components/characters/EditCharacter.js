@@ -4,6 +4,7 @@ import '../../App.css'
 import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
 import { arrayToOptions } from '../../functions/GeneralFunctions'
 import { UserContext } from '../../misc/UserContext'
+import { levelsAreBalanced, getRemainingLevelPoints } from '../../functions/CharacterCreation'
 
 export default class EditCharacter extends React.Component {
 
@@ -126,7 +127,10 @@ function ExistingGeneralInfo(props){
     const [delCharacter, {loading:delLoading, data:delData}] = useMutation(deleteCharacter, {variables:{character:character._id, user:character.user, campaign:character.campaign}})
     const [updateInfo, {loading:infoLoading, data:infoData}] = useMutation(updateCharacterInfo, {variables:{id:character._id, name:name, campaign:campaign}})
     const [updateStats, {loading:statsLoading, data:statsData}] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:parseInt(cha), con:parseInt(con), str:parseInt(str), dex:parseInt(dex), int:parseInt(int), wis:parseInt(wis)}})
-    
+    const [badStats, setBadStats] = useState(false)
+    const levels = [str, dex, con, int, wis, cha]
+    const [remainingSkillPoints, setRemaining] = useState(getRemainingLevelPoints(levels))
+
     useEffect(()=>{//only runs once, because props.classes never changes
         if (props.classes[0]!==undefined){
             changeClass(props.classes[0].index)
@@ -152,22 +156,24 @@ function ExistingGeneralInfo(props){
                 <input type="submit"/><button onClick={()=>{toggleRename(!rename)}}>Cancel</button>
             </form>
         </> : <><button onClick={()=>{toggleRename(!rename)}}>Rename/ChangeCampaign</button><br/></>}
-        <form onSubmit={updateStats}>
+        <form onSubmit={()=>{if(levelsAreBalanced([str, dex, con, int, wis, cha])){updateStats();setBadStats(false)}else{setBadStats(true)}}}>
             <input type="submit" /><br/>
             <ClassSelect id="class" current={charClass} classes={props.classes} changeClass={changeClass}/><br/>
             <label htmlFor="str" className="tbLabel">Str: 
-            <input type="number" id="str" name="str" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeStr(e.target.value)}} value={str}/></label>
+            <input type="number" id="str" name="str" min="1" max="20" required={true} onChange={(e)=>{const newLevelsStr = [str + (Number.parseInt(e.target.value) - str), dex, con, int, wis, cha];e.preventDefault();if(levelsAreBalanced(newLevelsStr)){changeStr(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsStr))}else{e.target.innerText = str}}} value={str}/></label>
             <label htmlFor="dex" className="tbLabel">Dex: 
-            <input type="number" id="dex" name="dex" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeDex(e.target.value)}} value={dex}/></label>
+            <input type="number" id="dex" name="dex" min="1" max="20" required={true} onChange={(e)=>{const newLevelsDex = [str, dex + (Number.parseInt(e.target.value) - dex), con, int, wis, cha];e.preventDefault();if(levelsAreBalanced(newLevelsDex)){changeDex(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsDex))}else{e.target.innerText = dex}}} value={dex}/></label>
             <label htmlFor="con" className="tbLabel">Con: 
-            <input type="number" id="con" name="con" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeCon(e.target.value)}} value={con}/></label>
+            <input type="number" id="con" name="con" min="1" max="20" required={true} onChange={(e)=>{const newLevelsCon = [str, dex, con + (Number.parseInt(e.target.value) - con), int, wis, cha];e.preventDefault();if(levelsAreBalanced(newLevelsCon)){changeCon(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsCon))}else{e.target.innerText = con}}} value={con}/></label>
             <label htmlFor="int" className="tbLabel">Int: 
-            <input type="number" id="int" name="int" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeInt(e.target.value)}} value={int}/></label>
+            <input type="number" id="int" name="int" min="1" max="20" required={true} onChange={(e)=>{const newLevelsInt = [str, dex, con, int + (Number.parseInt(e.target.value) - int), wis, cha];e.preventDefault();if(levelsAreBalanced(newLevelsInt)){changeInt(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsInt))}else{e.target.innerText = int}}} value={int}/></label>
             <label htmlFor="wis" className="tbLabel">Wis: 
-            <input type="number" id="wis" name="wis" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeWis(e.target.value)}} value={wis}/></label>
+            <input type="number" id="wis" name="wis" min="1" max="20" required={true} onChange={(e)=>{const newLevelsWis = [str, dex, con, int, wis + (Number.parseInt(e.target.value) - wis), cha];e.preventDefault();if(levelsAreBalanced(newLevelsWis)){changeWis(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsWis))}else{e.target.innerText = wis}}} value={wis}/></label>
             <label htmlFor="cha" className="tbLabel">Cha: 
-            <input type="number" id="cha" name="cha" min="1" max="20" required={true} onChange={(e)=>{e.preventDefault();changeCha(e.target.value)}} value={cha}/></label>
+            <input type="number" id="cha" name="cha" min="1" max="20" required={true} onChange={(e)=>{const newLevelsCha = [str, dex, con, int, wis, cha + (Number.parseInt(e.target.value) - cha)];e.preventDefault();if(levelsAreBalanced(newLevelsCha)){changeCha(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsCha))}else{e.target.innerText = cha}}} value={cha}/></label>
         </form>
+        <p>{remainingSkillPoints} points remaining</p>
+        {badStats && <p>bad stats</p>}
     </>)
 }
 
