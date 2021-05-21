@@ -171,8 +171,8 @@ function ExistingGeneralInfo(props){
             <input type="number" id="wis" name="wis" min="1" max="20" required={true} onChange={(e)=>{const newLevelsWis = [str, dex, con, int, wis + (Number.parseInt(e.target.value) - wis), cha];e.preventDefault();if(levelsAreBalanced(newLevelsWis)){changeWis(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsWis))}else{e.target.innerText = wis}}} value={wis}/></label>
             <label htmlFor="cha" className="tbLabel">Cha: 
             <input type="number" id="cha" name="cha" min="1" max="20" required={true} onChange={(e)=>{const newLevelsCha = [str, dex, con, int, wis, cha + (Number.parseInt(e.target.value) - cha)];e.preventDefault();if(levelsAreBalanced(newLevelsCha)){changeCha(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsCha))}else{e.target.innerText = cha}}} value={cha}/></label>
+            <p>{remainingSkillPoints} points remaining</p>
         </form>
-        <p>{remainingSkillPoints} points remaining</p>
         {badStats && <p>bad stats</p>}
     </>)
 }
@@ -181,7 +181,7 @@ function ClassSelect(props){
     let classOptions = arrayToOptions(props.classes, props.current)
     return(
         <label htmlFor="class" className="tbLabel">Class:
-            <select id="classes" required={true} name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}}>
+            <select id="classes" required={true} name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}} defaultValue={props.current}>
                 {classOptions}
             </select>
         </label>
@@ -205,7 +205,7 @@ function CampaignSelect(props){
     const campaignOptions = arrayToOptions(props.campaigns, props.current)
     return(<>
         <label htmlFor="campaigns" className="tbLabel">Campaign:
-            <select id="campaigns" name="campaigns" selectedIndex="0" required={true} onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}}>
+            <select id="campaigns" name="campaigns" selectedIndex="0" required={true} onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}} defaultValue={props.current}>
                 {campaignOptions}
             </select>
         </label>
