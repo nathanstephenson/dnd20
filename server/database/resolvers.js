@@ -160,7 +160,7 @@ const resolvers = {
             await Character.findByIdAndDelete(args.character)
             return "ran character deletion"
         },
-        async createSession(root, args, context){
+        async createSession(root, args, context){//sometimes doesnt transfer all characters?
             const newID = Mongoose.Types.ObjectId()
             const campaign = await Campaign.findById(args.campaign)
             if(String(args.user) === String(campaign.dm)){

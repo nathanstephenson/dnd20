@@ -1,4 +1,5 @@
 const {RESTDataSource} = require('apollo-datasource-rest');
+const {expandAPIRef} = require('../functions')
 
 class characterAPI extends RESTDataSource {
     constructor(){
@@ -6,27 +7,23 @@ class characterAPI extends RESTDataSource {
         this.baseURL = 'https://www.dnd5eapi.co/'
     }
 
-    async expandAPIRef(array){ //needs convert to map function instead
-        let newarray = []
-        for await(let element of array) {
-            let expanded = await this.get(element.url)
-            newarray.push(expanded)
-        }
-        return newarray
-    }
-
-
     async getClasses(){//should just deliver all populated classes
-        const {results} = await this.get(`api/classes`)
-        return await this.expandAPIRef(results)
+        let {results} = await this.get(`api/classes`)
+        return await expandAPIRef(results, this)
     }
-    async getClass(index){
-        const result = await this.get(`api/classes/${index}`)
+    async getClass(index){//WIP
+        let result = await this.get(`api/classes/${index}`)
+        result.proficiencies = await expandAPIRef(result.proficiencies, this)
+        result.proficiency_choices = await expandAPIRef(result.proficiency_choices, this)
+        result.starting_equipment = await expandAPIRef(result.starting_equipment, this)
+        result.starting_equipment_options = await expandAPIRef(result.starting_equipment_options, this)
+        result.subclasses = await expandAPIRef(result.subclasses, this)
+        console.log(result.starting_equipment_options[0].from[1].equipment_option.from)
         return result
     }
     async getRaces(){
         const {results} = await this.get(`api/races`)
-        return await this.expandAPIRef(results)
+        return await expandAPIRef(results, this)
     }
     async getRace(index){
         const result = await this.get(`api/races/${index}`)
@@ -34,11 +31,11 @@ class characterAPI extends RESTDataSource {
     }
     async getAbilityScores(){
         const {results} = await this.get(`api/ability-scores`)
-        return await this.expandAPIRef(results)
+        return await expandAPIRef(results, this)
     }
     async getSkills(){
         const {results} = await this.get(`api/skills`)
-        return await this.expandAPIRef(results)
+        return await expandAPIRef(results, this)
     }
 }
 

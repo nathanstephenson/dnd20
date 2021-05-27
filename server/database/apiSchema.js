@@ -1,4 +1,4 @@
-const { gql, makeExecutableSchema } = require('apollo-server-express');
+const { gql, makeExecutableSchema } = require('apollo-server-express');//copied from 'dnd5eapi.co/graphql' for easier integration
 const resolvers = require('./resolvers')
 
 const apiSchema = gql`
@@ -93,7 +93,7 @@ const apiSchema = gql`
     hit_die: Float
     index: String
     name: String
-    proficiencies: [AbilityScoreSkills]
+    proficiencies: [Proficiency]
     proficiency_choices: [ClassProficiency_choices]
     saving_throws: [AbilityScoreSkills]
     spellcasting: ClassSpellcasting
@@ -106,7 +106,7 @@ const apiSchema = gql`
 
   type ClassProficiency_choices {
     choose: Float
-    from: [AbilityScoreSkills]
+    from: [Proficiency]
     type: String
   }
 
@@ -122,7 +122,7 @@ const apiSchema = gql`
   }
 
   type ClassStarting_equipment {
-    equipment: AbilityScoreSkills
+    equipment: Equipment
     quantity: Float
   }
 
@@ -133,7 +133,7 @@ const apiSchema = gql`
   }
 
   type ClassStarting_equipment_optionsFrom {
-    equipment: AbilityScoreSkills
+    equipment: Equipment
     quantity: Float
   }
 
