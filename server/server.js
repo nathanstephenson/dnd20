@@ -34,6 +34,13 @@ const server = new ApolloServer({ schema: schema,
 server.applyMiddleware({ app, cors: true });
 app.use(express.static(publicPath));
 app.use(express.static(path.join(publicPath, 'build')));
+//allows requests to load JS for react-router instead of "GET" for every page
+app.get('/*', function(req, res) { 
+    res.sendFile(path.join(publicPath, 'build/index.html'), 
+    function(err) {
+        if (err) {res.status(500).send(err)}
+    })
+})
 
 //create designated HTTP server on the express instance so that subscriptions can be enabled over WS
 const httpServer = http.createServer(app)
