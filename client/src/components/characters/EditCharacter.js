@@ -1,114 +1,82 @@
 import React, {useContext, useEffect, useState} from 'react'
-import {useQuery, useMutation} from '@apollo/client'
+import {useQuery, useLazyQuery, useMutation} from '@apollo/client'
 import '../../App.css'
-import {addCharacter, deleteCharacter, getCharacter, getClasses, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
+import {addCharacter, deleteCharacter, getCharacter, getClasses, getClass, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
 import { arrayToOptions } from '../../functions/GeneralFunctions'
 import { UserContext } from '../../misc/UserContext'
 import { levelsAreBalanced, getRemainingLevelPoints } from '../../functions/CharacterCreation'
 
-export default class EditCharacter extends React.Component {
 
-    static contextType = UserContext
 
-    constructor(props){
-        super(props)
-        this.user = this.props.currentUser
-        this.characterID = this.props.characterID
-        this.returnLoaded = this.returnLoaded.bind(this)
-        this.submittedNew = this.submittedNew.bind(this)
-        this.state = {character:null, submitNew:false, submitGeneral:false, name:"", race:"", bg:"", campaign:""}
-    }
-
-    returnLoaded(character){
-        this.setState({character:character})
-    }
-
-    submittedNew(){
-        this.setState({submitNew:false, name:"", race:"", bg:"", campaign:""})
-        this.props.back()
-    }
-
-    render(){
-        return(<>
-            <button className="backButton" onClick={this.props.back}>Back</button>{/* vvv unloaded and unentered*/}
-            {/* ((this.characterID!==null)&&(this.state.character===null)) ? <LoadCharacter ID={this.characterID} return={this.returnLoaded}/> : <CharacterInfo submitNewGeneral={this.submitNewGeneral} user={this.user} character={this.state.character} new={this.state.character===null}/> */}
-            <CharacterInfo submitNew={this.submitNew} submitGeneral={this.submitGeneral} user={this.user} character={this.state.character} new={this.state.character===null} back={this.props.back}/>
-            {((this.characterID!==null)&&(this.state.character===null)) && <LoadCharacter ID={this.characterID} return={this.returnLoaded}/>}
-        </>)
-    }
-}
-
-function LoadCharacter(props){
-    console.log(props.ID)
-    const {loading, data, error} = useQuery(getCharacter, {variables:{id:props.ID}, fetchPolicy:'network-only'})
+export default function EditCharacter(props){
+    const user = props.currentUser
+    const [character, updateCharacter] = useState(null)
+    const {loading, data, refetch: reloadCharacter} = useQuery(getCharacter, {variables:{id:props.characterID}, fetchPolicy:'network-only'})
+    useEffect(()=>{
+        if (loading===false && data!==undefined){
+            updateCharacter(data.character)
+        }
+    }, [data, loading, props.characterID])
     while(loading){
-        return(<p>loading...</p>)
-    }
-    if(error){//no need to print errors here, as they wont. just if data && data.variable
-        console.log(error)
-        return(<p></p>)
-    }else{
-        console.log(data)
-        props.return(data.character)
-        return(<p>done</p>)
-    }
-}
-
-function CharacterInfo(props){
-    console.log('character info', props.new)
-    const {loading:raceLoading, data:raceData} = useQuery(getRaces)
-    const {loading:classLoading, data:classData} = useQuery(getClasses)
-    const [page, changePage] = useState(0)
-    while(classLoading||raceLoading){
         return(<p>Loading...</p>)
     }
-    let pages = [
-        (props.new ? <NewGeneralInfo races={raceData.races} user={props.user} submit={props.submitNew} back={props.back}/> : <ExistingGeneralInfo character={props.character} classes={classData.classes} submit={props.submitGeneral} back={props.back}/>),
-    ]
-    pages.forEach(element => {
-        if(element!==pages[page]){
-            element = null
-        }
-    })
-    //make a set of buttons to change page with the index of the pages array
-    return (<div>
-        {pages}
-    </div>)
+    return(<>
+        <button className="backButton" onClick={props.back}>Back</button>{/* vvv unloaded and unentered*/}
+        {loading===false && (character!==null ? <CharacterInfo user={user} character={character} reload={reloadCharacter} back={props.back}/> : <NewGeneralInfo user={user} back={props.back}/>)}
+    </>)
 }
 
 function NewGeneralInfo(props){
-    const {user} = useContext(UserContext)
     const [name, changeName] = useState("")
     const [background, changeBG] = useState("")
     const [race, changeRace] = useState("")
     const [campaign, changeCampaign] = useState("")
+    const {loading:raceLoading, data:raceData} = useQuery(getRaces)
     const [createNew, {loading:newLoading, data:newData}] = useMutation(addCharacter)
-    console.log(user.campaigns)
     useEffect(()=>{
-        if (user.campaigns[0]!==undefined){
-            console.log(user.campaigns[0]._id)
-            changeCampaign(user.campaigns[0]._id)
+        if (props.user.campaigns[0]!==undefined){
+            changeCampaign(props.user.campaigns[0]._id)
         }
-        if (props.races[0]!==undefined){
-            console.log(props.races[0].index)
-            changeRace(props.races[0].index)
+        if(raceData!==undefined){
+            if (raceData.races[0]!==undefined){
+                changeRace(raceData.races[0].index)
+            }
         }
-    },[props.races, user.campaigns])
-    while(newLoading){
+    },[raceData, props.user.campaigns])
+    while(raceLoading||newLoading){
         return(<p>Loading...</p>)
     }
     if(newData!==undefined){
         props.back()
     }
-    return (<form onSubmit={()=>{console.log(user._id, campaign, name, race, background);createNew({variables:{user:user._id, campaign:campaign, name:name, race:race, background:background}})}}>
+    return (<form onSubmit={()=>{console.log(props.user._id, campaign, name, race, background);createNew({variables:{user:props.user._id, campaign:campaign, name:name, race:race, background:background}})}}>
         <input type="submit" /><br/>
         <label htmlFor="name" className="tbLabel">Name: 
         <input type="name" id="name" name="name" required={true} onChange={(e)=>{e.preventDefault();changeName(e.target.value)}} value={name}/></label>
-        <CampaignSelect id="campaign" campaigns={user.campaigns} changeCampaign={changeCampaign}/><br/>
+        <CampaignSelect id="campaign" campaigns={props.user.campaigns} changeCampaign={changeCampaign}/><br/>
         <label htmlFor="bg" className="tbLabel">Background Info / Lore: 
         <textarea id="bg" name="bg" onChange={(e)=>{e.preventDefault();changeBG(e.target.value)}} value={background} rows="4" cols="50" maxLength="500"/></label><br/>
-        <RaceSelect id="race" races={props.races} changeRace={changeRace}/><br/>
+        <RaceSelect id="race" races={raceData.races} changeRace={changeRace}/><br/>
     </form>)
+}
+
+function CharacterInfo(props){
+    console.log(props.character)
+    const {loading:classLoading, data:classData} = useQuery(getClasses)
+    const [page, changePage] = useState(0)
+    while(classLoading){
+        return(<p>Loading...</p>)
+    }
+    let pages = <>{[
+            page===0 && <ExistingGeneralInfo character={props.character} classes={classData.classes} back={props.back}/>,
+            page===1 && <Proficiencies character={props.character}/>
+        ]}<p className="Form">Page:
+            <button onClick={()=>{changePage(0)}}>1</button>
+            <button onClick={()=>{changePage(1)}}>2</button>
+        </p></>
+    return (<div><h2>{props.character.name}</h2>
+        <div className="Form">{pages}</div>
+    </div>)
 }
 
 function ExistingGeneralInfo(props){
@@ -129,7 +97,7 @@ function ExistingGeneralInfo(props){
     const [updateStats, {loading:statsLoading, data:statsData}] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:parseInt(cha), con:parseInt(con), str:parseInt(str), dex:parseInt(dex), int:parseInt(int), wis:parseInt(wis)}})
     const [badStats, setBadStats] = useState(false)
     const levels = [str, dex, con, int, wis, cha]
-    const [remainingSkillPoints, setRemaining] = useState(getRemainingLevelPoints(levels))
+    const [remainingLevelPoints, setRemaining] = useState(getRemainingLevelPoints(levels))
 
     useEffect(()=>{//only runs once, because props.classes never changes
         if (props.classes[0]!==undefined){
@@ -146,7 +114,7 @@ function ExistingGeneralInfo(props){
     if(delData!==undefined||infoData!==undefined||statsData!==undefined){
         props.back()
     }
-    return (<><div><h2>{character.name}</h2>
+    return (<><div>
         <button onClick={delCharacter}>Delete Character</button></div>
         {rename ? <>
             <form onSubmit={updateInfo}>
@@ -156,7 +124,7 @@ function ExistingGeneralInfo(props){
                 <input type="submit"/><button onClick={()=>{toggleRename(!rename)}}>Cancel</button>
             </form>
         </> : <><button onClick={()=>{toggleRename(!rename)}}>Rename/ChangeCampaign</button><br/></>}
-        <form onSubmit={()=>{if(levelsAreBalanced([str, dex, con, int, wis, cha])){updateStats();setBadStats(false)}else{setBadStats(true)}}}>
+        <form className="Form" onSubmit={()=>{if(levelsAreBalanced([str, dex, con, int, wis, cha])){updateStats();setBadStats(false)}else{setBadStats(true)}}}>
             <input type="submit" /><br/>
             <ClassSelect id="class" current={charClass} classes={props.classes} changeClass={changeClass}/><br/>
             <label htmlFor="str" className="tbLabel">Str: 
@@ -171,10 +139,54 @@ function ExistingGeneralInfo(props){
             <input type="number" id="wis" name="wis" min="1" max="20" required={true} onChange={(e)=>{const newLevelsWis = [str, dex, con, int, wis + (Number.parseInt(e.target.value) - wis), cha];e.preventDefault();if(levelsAreBalanced(newLevelsWis)){changeWis(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsWis))}else{e.target.innerText = wis}}} value={wis}/></label>
             <label htmlFor="cha" className="tbLabel">Cha: 
             <input type="number" id="cha" name="cha" min="1" max="20" required={true} onChange={(e)=>{const newLevelsCha = [str, dex, con, int, wis, cha + (Number.parseInt(e.target.value) - cha)];e.preventDefault();if(levelsAreBalanced(newLevelsCha)){changeCha(Number.parseInt(e.target.value));setRemaining(getRemainingLevelPoints(newLevelsCha))}else{e.target.innerText = cha}}} value={cha}/></label>
-            <p>{remainingSkillPoints} points remaining</p>
+            <p>{remainingLevelPoints} points remaining</p>
         </form>
         {badStats && <p>bad stats</p>}
     </>)
+}
+
+function Proficiencies(props){//works(only for first set of choices), just needs submit button
+    const {data, loading} = useQuery(getClass, {variables:{index:props.character.class}})
+    const [chosen, updateChosen] = useState(0)
+    const [chosenOptions, changeChosen] = useState([])
+    const [defaults, changeDefaults] = useState([])
+    useEffect(()=>{
+        if (!(data===null||data===undefined) && loading===false){
+            changeChosen(data.class.proficiency_choices[0].from.map(()=>{return null}))
+            changeDefaults(data.class.proficiencies.map((currentValue)=>{return currentValue.name}))
+        }
+    },[data, loading, props.classes])
+    while(loading){
+        return(<p>Loading data...</p>)
+    }
+    if (!(data===null||data===undefined) && loading===false){
+        const charClass = data.class
+        const options = charClass.proficiency_choices[0]
+        function choose(checkbox){
+            if(checkbox.checked){
+                if(chosen+1 <= options.choose){
+                    updateChosen(Number.parseInt(chosen+1))
+                    changeChosen(chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return checkbox.id}else{return currentValue}}))
+                }else{
+                    checkbox.checked = false
+                }
+            }else{
+                updateChosen(chosen-1)
+                changeChosen(chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return null}else{return currentValue}}))
+            }
+        }
+        const profOptions = options.from.map((currentValue, index)=>{
+            return(<><input type="checkbox" name={index} id={currentValue.index} onChange={(e)=>{choose(e.target)}}/><label for={index}>{currentValue.name}</label></>)
+        })
+        return (<>
+            <p>Choose {options.choose}:</p>
+            <form>
+                {profOptions}
+            </form>
+            <p>{defaults}</p>
+        </>)
+    }
+    return(<p></p>)
 }
 
 function ClassSelect(props){
