@@ -12,16 +12,22 @@ export function DisplayCharacters(props){//need to render the Campaign function 
     const [startSession, {data: createSessionData}] = useMutation(createSession)
     const [finishSession, {data: endSessionData}] = useMutation(endSession)
     const currentUser = user
-    const characterList = currentUser.characters.map((currentValue, index)=>{return <Character key={index} character={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user} campaign={currentUser.campaigns.find(element => element._id===currentValue.campaign)}/>})
+    const characterList = currentUser.characters.map((currentValue, index)=>{
+        return <Character key={index} character={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user} campaign={currentUser.campaigns.find(element => element._id===currentValue.campaign)}/>
+    })
     if(props.purpose==="Play"){
         characterList.push(currentUser.campaigns.map(element=>{
             return (<>
-                {user._id===element.dm && element.currentSession===null && <button onClick={() => startSession({variables:{campaign:element._id, user:user._id}})}>
-                    Begin {element.name}
-                </button>}
-                {user._id===element.dm && element.currentSession!==null && <button onClick={() => finishSession({variables:{campaign:element._id, user:user._id}})}>
-                    End {element.name} session
-                </button>}
+                {user._id===element.dm && element.currentSession===null && 
+                    <button onClick={() => startSession({variables:{campaign:element._id, user:user._id}})}>
+                        Begin {element.name}
+                    </button>
+                }
+                {user._id===element.dm && element.currentSession!==null && 
+                    <button onClick={() => finishSession({variables:{campaign:element._id, user:user._id}})}>
+                        End {element.name} session
+                    </button>
+                }
             </>)
         }))
     }
@@ -37,7 +43,7 @@ export function DisplayCharacters(props){//need to render the Campaign function 
 function Character(props){
     return (
         <div className="character">
-            <p key="c1" className="characer-name">{props.character.name}</p>
+            <p key="c1" className="character-name">{props.character.name}</p>
             <ul>
                 <li key="mainButton">
                     {props.purpose==="Edit" && <button onClick={() => props.changeSelected(props.character._id)}>
