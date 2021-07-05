@@ -19,9 +19,9 @@ const httpLink = new HttpLink({
 });
 const splitLink = split(({query})=>{
   const definition = getMainDefinition(query)
-  /* console.log(definition.kind === 'OperationDefinition' && definition.operation === 'subscription') */
   return (
-    definition.kind === 'OperationDefinition' && definition.operation === 'subscription'//uses wsLink if subscription operation
+    (definition.kind === 'OperationDefinition') 
+    && (definition.operation === 'subscription')//uses wsLink if subscription operation
   )
 }, wsLink, httpLink)
 
@@ -39,7 +39,7 @@ export const apolloClient = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client = {apolloClient}>
     <BrowserRouter>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/><App />
+      <meta name="viewport" content="width=device-width, initial-scale=1"/><App />
     </BrowserRouter>
   </ApolloProvider>,
   document.getElementById('root')

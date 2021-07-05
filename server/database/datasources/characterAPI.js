@@ -18,7 +18,7 @@ class characterAPI extends RESTDataSource {
         result.starting_equipment = await expandAPIRef(result.starting_equipment, this)
         result.starting_equipment_options = await expandAPIRef(result.starting_equipment_options, this)
         result.subclasses = await expandAPIRef(result.subclasses, this)
-        console.log(result.starting_equipment_options[0].from[1].equipment_option.from)
+        console.log(result)
         return result
     }
     async getRaces(){

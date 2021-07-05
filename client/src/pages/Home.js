@@ -24,7 +24,7 @@ function Home() {
 			<h1 className="title">
 				DnD20
 			</h1>
-			<button name="showpong" onClick={() => setButtonIfUser()}>
+			<button name="showname" onClick={() => setButtonIfUser()}>
 				{buttonText}
 			</button>
 			<p>welcome to the app, gamer</p>

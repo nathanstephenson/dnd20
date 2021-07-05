@@ -30,9 +30,11 @@
 }
 
 .Form {
-  font-size: medium;
-  display: table;
+  outline: 2px solid black;
+  /* font-size: medium;
+  display: table; */
 }
+
 
 .navbar {
   position: -webkit-sticky; /* for safari */

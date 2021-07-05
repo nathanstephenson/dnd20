@@ -47,7 +47,11 @@ export default function Campaigns(props) {
     return(<>
         {!chosen && <><h1 className="title"> Campaigns </h1>
             {!wantsJoin && <button onClick={()=>{changeWantsJoin(!wantsJoin)}}>Join Campaign</button>}
-            {wantsJoin && <><input type="campaign" onChange={(e)=>{e.preventDefault();changeJoinName(e.target.value)}} value={joinName}></input><button onClick={()=>{changeJoinSubmitted(!joinSubmitted)}}>Join</button><button onClick={()=>{changeWantsJoin(!wantsJoin)}}>x</button></>}
+            {wantsJoin && <>
+                <input type="campaign" onChange={(e)=>{e.preventDefault();changeJoinName(e.target.value)}} value={joinName}></input>
+                <button onClick={()=>{changeJoinSubmitted(!joinSubmitted)}}>Join</button>
+                <button onClick={()=>{changeWantsJoin(!wantsJoin)}}>x</button>
+            </>}
             {(!wantsNew && !newSubmitted) && <button onClick={()=>{changeWantsNew(!wantsNew)}}>+</button>}
             {(wantsNew && !newSubmitted) && <>
                 <form className="Form" onSubmit={(e)=>{e.preventDefault();changeNewSubmitted(!newSubmitted)}}>

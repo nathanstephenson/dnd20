@@ -7,7 +7,9 @@ export function DisplayCampaigns(props){//need to render the Campaign function f
         refreshUser()
         props.refreshed()
     }
-    const campaignList = user.campaigns.map((currentValue, index)=>{return <Campaign key={index} campaign={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user._id}/>})
+    const campaignList = user.campaigns.map((currentValue, index)=>{
+        return <Campaign key={index} campaign={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user._id}/>
+    })
     return (
         <>
             {(user.campaigns.length===0) && <p>You are not currently participating in any campaigns.</p>}
@@ -24,9 +26,6 @@ function Campaign(props){
             <ul><li key="editButton">
                 {props.purpose==="Edit" && <button onClick={() => props.changeSelected(props.campaign._id)}>
                     Edit
-                </button>}
-                {props.purpose==="Play" && <button onClick={() => props.changeSelected(props.campaign.currentSession)}>
-                    Play
                 </button>}
             </li></ul>
         </div>

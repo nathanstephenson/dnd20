@@ -18,7 +18,7 @@ export default function Play(props) {
 }
 
 function PlayView(props){
-    const{data:queryData, loading:queryLoading, refetch} = useQuery(currentSession, {variables:{id:props.sessionID}})
+    const {data:queryData, loading:queryLoading, refetch} = useQuery(currentSession, {variables:{id:props.sessionID}})
     const {data:updateData, loading:updateLoading} = useSubscription(onSessionUpdate, {variables:{id:props.sessionID}})
     const [data, changeData] = useState(undefined)
 
@@ -44,7 +44,12 @@ function PlayView(props){
     return (
         <>
             <h2>Play the game</h2>
-            {data!==undefined ? <PartyCharacters session={data}/> : <p>No characters in this party.</p>}
+            {data!==undefined ? 
+                <div className="play">
+                    <PartyCharacters session={data}/>
+                </div>
+                : <p>No characters in this party.</p>
+            }
         </>
     )
 }

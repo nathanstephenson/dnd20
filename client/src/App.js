@@ -7,7 +7,6 @@ function App(){
     
     const [userID, setUserID] = useState(null)
     //add function to save ID/token to local storage here
-
     return (
         <div className="App">
             {userID ? <Main id={userID}/> : <Login handleLogin={setUserID}/>}

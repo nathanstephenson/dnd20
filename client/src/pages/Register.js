@@ -77,7 +77,7 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.password}}, {fetchPolicy:'network-only'});//looking for existing user
+	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.password}}, {fetchPolicy:'network-only'});//check email instead of password here, as password does not need to be unique
 	const [newUser, { data, loading }] = useMutation(addUser);
 	while (queryLoading||loading) {console.log("loading");return(<p>Loading...</p>)}
 	console.log(queryData.getUserID)

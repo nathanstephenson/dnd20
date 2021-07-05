@@ -7,26 +7,20 @@ async function expandAPIRef(array, sender){ //sender is used for "get" method
     for await(let element of array) {
         if (element != undefined ) {
             if (isAPIRef(element)){
-                //console.log("expanding ref")
                 element = await sender.get(element.url)
             } else {
                 for (const e in element){
                     if (Array.isArray(element[e])){
-                        //console.log("expanding multiple")
                         element[e] = await expandAPIRef(element[e], sender)
-                        //console.log(element[e])
                     } else if (isAPIRef(element[e])){
-                        //console.log("expanding single", element[e])
                         const expanded = await expandAPIRef([element[e]], sender)
                         element[e] = expanded[0]
-                        //console.log("expanded", element[e])
                     }
                 }
             } 
             newarray.push(element)
         } //console.log(element)
-    }
-    //console.log(newarray)
+    } //console.log(newarray)
     return newarray
 }
 
