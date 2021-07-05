@@ -191,6 +191,40 @@ export const getClasses = gql`
   }
 `;
 
+export const getClass = gql`
+  query getClass($index:String){
+    class(index:$index){
+      index
+      name
+      proficiencies{
+        name
+      }
+      proficiency_choices{
+        choose
+        from{
+          index
+          name
+          races{
+            index
+          }
+        }
+      }
+      starting_equipment_options{
+        choose
+        from{
+          equipment{
+            index
+            name
+            damage{
+              damage_dice
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const getRaces = gql`
   query getRaces{
     races{
