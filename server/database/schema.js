@@ -51,7 +51,7 @@ const typeDefs = gql`
         characters: [Character]
     }
 
-    type CharacterPosition {
+    type CharacterReference {
         _id: ID!
         character: Character!
         position: Int!
@@ -60,7 +60,7 @@ const typeDefs = gql`
     type Session {
         _id: ID!
         campaign: ID
-        characters: [CharacterPosition]
+        characters: [CharacterReference]
     }
 
     type Query {

@@ -148,7 +148,12 @@ const resolvers = {
             })
         },
         async updateCharacterInfo(root, args, context){
-            return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{name:args.name, campaign:args.campaign}}, {new:true})
+            const char = await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{name:args.name, campaign:args.campaign}})
+            if(Mongoose.Types.ObjectId(args.campaign) != char.campaign){
+                await Campaign.findByIdAndUpdate(char.campaign, {$pull:{characters:Mongoose.Types.ObjectId(args.id)}})
+                await Campaign.findByIdAndUpdate(args.campaign, {$addToSet:{characters:Mongoose.Types.ObjectId(args.id)}})
+            }
+            return await Character.findById(args.id)
         },
         async updateCharacterStats(root, args, context){
             return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{class:args.class, cha:args.cha, con:args.con, dex:args.dex, int:args.int, str:args.str, wis:args.wis}}, {new:true})
