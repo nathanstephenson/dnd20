@@ -1,8 +1,8 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client'
 import '../../App.css';
 import {UserContext} from '../../misc/UserContext'
-import {getCampaign, renameCampaign, deleteCampaign} from '../../queries'
+import {getCampaign, renameCampaign, deleteCampaign, leaveCampaign} from '../../queries'
 
 export default class EditCampaign extends React.Component {
     constructor(props) {
@@ -36,7 +36,7 @@ export default class EditCampaign extends React.Component {
     }
 
     returnCampaign(campaign){
-        console.log("selected campaign:", campaign)
+        //console.log("selected campaign:", campaign)
         this.setState({campaign:campaign, name:campaign.name, loaded:true})
     }
 
@@ -47,8 +47,10 @@ export default class EditCampaign extends React.Component {
     render() {
         if(this.campaignID != null){
             let isDM = false
+            let isActive = false
             if(this.state.campaign !== null){
                 isDM = (this.props.currentUserID===this.state.campaign.dm)
+                isActive = (this.state.campaign.session!==null)
             }
             return(
                 <>
@@ -59,15 +61,16 @@ export default class EditCampaign extends React.Component {
                         <h1 className="title">
                             Edit Campaign 
                         </h1>
+                        {<><RemovePlayers ID={this.campaignID}/><br/></>}
                         {this.state.showID ? <><p>{this.campaignID}<button onClick={this.toggleID}>x</button></p></> : <button onClick={this.toggleID}>Show ID</button>}
-                        <button onClick={this.delete}>Delete this campaign</button>
+                        <button onClick={this.delete}>Delete this campaign</button><br/><br/>
                         <form className="Form" onSubmit={this.submit}>
                             <div><label htmlFor="name" className="tbLabel">Campaign Name: 
                             <input type="name" id="name" name="name" required={true} onChange={this.handleNameChange} value={this.state.name}/></label><br/></div>
                             <input type="submit" value="Submit"/>
                         </form><br/>
                     </div>}</>}
-                    {/* this.state.leave && <LeaveCampaign/> */}
+                    {(!isDM ) && <LeaveCampaign ID={this.campaignID} back={this.props.back}/>}
                     {this.state.submit && <SubmitCampaign submitted={this.submitted} id={this.campaignID} name={this.state.name}/>} 
                     {this.state.delete && <DeleteCampaign submitted={this.submitted} dm={this.state.campaign.dm} campaignID={this.campaignID}/>}
                     <button onClick={this.props.back}>Go Back</button>
@@ -130,16 +133,36 @@ function DeleteCampaign(props){
 
 function LeaveCampaign(props){
     const {user:currentUser} = useContext(UserContext)
-    const [tryLeaveCampaign, { data, loading }] = useMutation(/* leaveCampaign */);//this method means it only gets added once
+    const [tryLeaveCampaign, { data, loading }] = useMutation(leaveCampaign);
 	while(loading){
 		return(<p>Loading...</p>);
 	}
-    if(data===undefined){
-        tryLeaveCampaign({variables:{user:currentUser._id, dm:props.dm, campaign:props.campaignID}})
-        console.log('attempted deleteCampaign')
-    }else if(data != null){
-        console.log('done', data)
-        props.submitted()
-    }
-    return null
+    return <button onClick={()=>{tryLeaveCampaign({variables:{user:currentUser._id, campaign:props.ID}});props.back()}}>Leave Campaign</button>
+}
+
+function RemovePlayers(props){
+    const {user} = useContext(UserContext)
+    const { data, loading, refetch } = useQuery(getCampaign, {variables:{id:props.ID}, notifyOnNetworkStatusChange:'true'})
+    const [removePlayer, { data:response, loading:waitingResponse }] = useMutation(leaveCampaign)//this method means it only gets added once
+    const [players, updatePlayers] = useState([])
+    useState(()=>{
+        if(loading||waitingResponse){
+            console.log("loading")
+        }
+        if(data!==undefined && loading===false){
+            if(data!==null){
+                console.log(data.campaign)
+                if(data.campaign===null){
+                    refetch()
+                }else{
+                    updatePlayers(data.campaign.characters.map((value, index)=>{
+                        if(value.user._id!==user._id){
+                            return <button onClick={()=>{removePlayer({variables:{user:value.user._id, campaign:props.ID}});refetch()}}>Remove {value.user.name}</button>
+                        }else{return null}
+                    }))
+                }
+            }
+        }
+    },[data, loading])
+    return <>{players}</>
 }
