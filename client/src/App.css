@@ -1,8 +1,11 @@
 :root {
-  --bg-primary: #e0e0eb;
-  --bg-secondary: #2d2d3e;
+  --bg-day: #e0e0eb;
+  --bg-night: #33334d;
+
+  --bg-primary: var(--bg-day);
+  --bg-navbar: #2d2d3e;
   --navTextColour: #e6e6e6;
-  --transition-speed: 100ms;
+  --transition-speed: 100ms ease;
 }
 
 .App {
@@ -42,7 +45,7 @@
   width: 6rem;
   height: 100vh;
   position: fixed;
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-navbar);
 }
 
 .navbar:hover {
@@ -67,6 +70,7 @@
 .nav-title {
   margin-top: 10vh;
   margin-bottom: 20vh;
+  width: 100%;
 }
 
 .nav-item {
@@ -86,6 +90,7 @@
 
 .nav-button {
   margin-top: auto;
+  margin-bottom: 2rem;
   display: none;
 }
 

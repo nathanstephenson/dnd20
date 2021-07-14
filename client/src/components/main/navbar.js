@@ -11,14 +11,12 @@ export default function NavBar(props){
     const style = document.querySelector(':root').style
     var toggleNightMode = <span className="nav-button"><button onClick={()=>{
         if(night){
-            style.setProperty('--bg-primary', '#e0e0eb')
-            style.setProperty('--bg-secondary', '#2d2d3e')
+            style.setProperty('--bg-primary', 'var(--bg-day)')
             style.setProperty('--navTextColour', '#e6e6e6')
             toggleNight(false)
             changeButtonText("D")
         }else{
-            style.setProperty('--bg-primary', '#33334d')
-            style.setProperty('--bg-secondary', '#2d2d3e')
+            style.setProperty('--bg-primary', 'var(--bg-night)')
             style.setProperty('--navTextColour', '#e6e6e6')
             toggleNight(true)
             changeButtonText("N")
