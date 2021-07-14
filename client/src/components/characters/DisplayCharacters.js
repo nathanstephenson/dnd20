@@ -12,8 +12,9 @@ export function DisplayCharacters(props){//need to render the Campaign function 
     const [startSession, {data: createSessionData}] = useMutation(createSession)
     const [finishSession, {data: endSessionData}] = useMutation(endSession)
     const currentUser = user
-    const characterList = currentUser.characters.map((currentValue, index)=>{
-        return <Character key={index} character={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user} campaign={currentUser.campaigns.find(element => element._id===currentValue.campaign)}/>
+    const characterList = currentUser.characters.map((currentValue, index)=>{//doesn't render if user doesn't have campaign
+        var cam = currentUser.campaigns.find(element => element._id===currentValue.campaign)
+        return <Character key={index} character={currentValue} changeSelected={props.changeSelected} purpose={props.purpose} currentUser={user} campaign={cam}/>
     })
     if(props.purpose==="Play"){
         characterList.push(currentUser.campaigns.map(element=>{
@@ -41,6 +42,7 @@ export function DisplayCharacters(props){//need to render the Campaign function 
 }
 
 function Character(props){
+        console.log(props.campaign)
     return (
         <div className="character">
             <p key="c1" className="character-name">{props.character.name}</p>
@@ -49,7 +51,7 @@ function Character(props){
                     {props.purpose==="Edit" && <button onClick={() => props.changeSelected(props.character._id)}>
                         Edit
                     </button>}
-                    {(props.purpose==="Play" && props.campaign.currentSession!==null) && <button onClick={() => props.changeSelected(props.campaign.currentSession)}>
+                    {((props.purpose==="Play" && props.campaign!==undefined) && props.campaign.currentSession!==null) && <button onClick={() => props.changeSelected(props.campaign.currentSession)}>
                         Play
                     </button>}
                 </li>

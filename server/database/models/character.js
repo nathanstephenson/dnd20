@@ -17,7 +17,7 @@ const characterSchema = new Mongoose.Schema({
   str: Number,
   wis: Number,
   items: [String],
-  proficiencies: [String],
+  skills: [String],
 });
 
 const Character = Mongoose.model('Character', characterSchema);

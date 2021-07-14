@@ -19,7 +19,6 @@ export function DisplayCampaigns(props){//need to render the Campaign function f
 }
 
 function Campaign(props){
-    console.log(props.campaign.dm, props.currentUser)
     return (
         <div className="campaign">
             <p key="c1" className="campaign-name">{props.campaign.name}</p>
