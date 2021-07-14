@@ -1,33 +1,52 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../../App.css'
 import { Link } from "react-router-dom";
 
 export default function NavBar(props){
 
     const current = window.location.pathname
+
+    const [night, toggleNight] = useState(false)
+    const [buttonText, changeButtonText] = useState("D")
+    const style = document.querySelector(':root').style
+    var toggleNightMode = <span className="nav-button"><button onClick={()=>{
+        if(night){
+            style.setProperty('--bg-primary', '#e0e0eb')
+            style.setProperty('--bg-secondary', '#2d2d3e')
+            style.setProperty('--navTextColour', '#e6e6e6')
+            toggleNight(false)
+            changeButtonText("D")
+        }else{
+            style.setProperty('--bg-primary', '#33334d')
+            style.setProperty('--bg-secondary', '#2d2d3e')
+            style.setProperty('--navTextColour', '#e6e6e6')
+            toggleNight(true)
+            changeButtonText("N")
+        }
+    }} className="nav-link">{buttonText}</button></span>
     
-    var home = <Link to="/"  className="navLink-home">
-            <h3> DND20 </h3>
-        </Link>
-    var campaigns =  <Link to="/Campaigns" className="navLink">
-            <p> Campaigns </p>
-        </Link>
-    var characters = <Link to="/Characters" className="navLink">
-            <p> Characters </p>
-        </Link>
-    var play = <Link to="/Play" className="navLink">
-            <p> Play </p>
-        </Link>
-    var account = <Link to="/MyAccount" className="navLink">
-            <p> My Account </p>
-        </Link>
-    var links = [home, campaigns, characters, play, account]
+    var home = <li className="nav-title"><Link to="/" className="nav-link">
+            <span className="nav-title-text"> DND20 </span>
+        </Link></li>
+    var campaigns =  <li className="nav-item"><Link to="/Campaigns" className="nav-link">
+            <span className="nav-text"> Campaigns </span>
+        </Link></li>
+    var characters = <li className="nav-item"><Link to="/Characters" className="nav-link">
+            <span className="nav-text"> Characters </span>
+        </Link></li>
+    var play = <li className="nav-item"><Link to="/Play" className="nav-link">
+           <span className="nav-text"> Play </span>
+        </Link></li>
+    var account = <li className="nav-item"><Link to="/MyAccount" className="nav-link">
+            <span className="nav-text"> My Account </span>
+        </Link></li>
+    var links = [home, campaigns, characters, play, account, toggleNightMode]
 
     //maybe set current page's link's background to different colour
 
     return(
         <nav className="navbar">
-            {links}
+            <ul className="navbar-nav">{links}</ul>
         </nav>
     )
 }

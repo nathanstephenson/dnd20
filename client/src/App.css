@@ -1,6 +1,8 @@
 :root {
-  --primaryColour: #e6e6e6;
-
+  --bg-primary: #e0e0eb;
+  --bg-secondary: #2d2d3e;
+  --navTextColour: #e6e6e6;
+  --transition-speed: 100ms;
 }
 
 .App {
@@ -19,7 +21,8 @@
 }
 
 .App-header {
-  background-color: var(--primaryColour);
+  background-color: var(--bg-primary);
+  margin-left: 6rem;/* for navbar */
   min-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -35,47 +38,74 @@
   display: table; */
 }
 
-
 .navbar {
-  position: -webkit-sticky; /* for safari */
-  position: sticky;
-  top:1%;
-  margin-left: 25%;
-  margin-right: 25%;
-  justify-content: space-between;
+  width: 6rem;
+  height: 100vh;
+  position: fixed;
+  background-color: var(--bg-secondary);
+}
+
+.navbar:hover {
+  width: 15rem;
+  transition: var(--transition-speed);
+}
+
+.navbar:hover .nav-button {
+  display: block;
+}
+
+.navbar-nav {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-title {
+  margin-top: 10vh;
+  margin-bottom: 20vh;
+}
+
+.nav-item {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item:last-child {
+  margin-top: auto;
+}
+
+.nav-item:hover {
+  background-color: #4b4b68;
+}
+
+.nav-button {
+  margin-top: auto;
+  display: none;
+}
+
+.nav-link {
+  display: flex;
   flex-direction: row;
-  border: 1px dashed black;
-  background-color: dimgray;
-  z-index: 1000; /* <apparently this is not very good practice, but works for now to get the navbar over the other components */
-}
-
-.navLink-home {
-  display: inline-flex;
-  margin-right: 30%;
-  margin-left: 1%;
-}
-
-.navLink {
-  display :inline-flex;
-  padding-right: 1%;
-  padding-left: 1%;
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.navLink:link, .navLink:visited, .navLink-home:link, .navLink-home:visited {
+  align-items: center;
   text-decoration: none;
-  color: whitesmoke;
+  justify-content: center;
+  height: 2rem;
+  width: 100%;
 }
 
-.navLink:hover {
-  text-decoration: none;
-  background-color: grey;
+.nav-text {
+  color: var(--navTextColour);
 }
 
-.Current-page {
-  text-decoration: none;
-  background-color: grey;
+.nav-title-text {
+  color: var(--navTextColour);
+  font-size: 1.5em;
 }
 
 .campaign {
