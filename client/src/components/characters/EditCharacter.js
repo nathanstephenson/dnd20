@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
 import {useQuery, useLazyQuery, useMutation} from '@apollo/client'
 import '../../App.css'
-import {addCharacter, deleteCharacter, getCharacter, getClasses, getClass, getRaces, updateCharacterInfo, updateCharacterStats} from '../../queries'
+import {addCharacter, deleteCharacter, getCharacter, getClasses, getClass, getRaces, updateCharacterInfo, updateCharacterStats, updateCharacterSkills} from '../../queries'
 import { arrayToOptions } from '../../functions/GeneralFunctions'
 import { UserContext } from '../../misc/UserContext'
 import { levelsAreBalanced, getRemainingLevelPoints } from '../../functions/CharacterCreation'
@@ -15,6 +15,9 @@ export default function EditCharacter(props){
     useEffect(()=>{
         if (loading===false && data!==undefined){
             updateCharacter(data.character)
+        }
+        if(loading){
+            return(<p>Loading..</p>)
         }
     }, [data, loading, props.characterID])
     while(loading){
@@ -61,7 +64,7 @@ function NewGeneralInfo(props){
 }
 
 function CharacterInfo(props){
-    console.log(props.character)
+    //console.log(props.character)
     const {loading:classLoading, data:classData} = useQuery(getClasses)
     const [page, changePage] = useState(0)
     while(classLoading){
@@ -69,7 +72,7 @@ function CharacterInfo(props){
     }
     let pages = <>{[
             page===0 && <ExistingGeneralInfo character={props.character} classes={classData.classes} back={props.back}/>,
-            page===1 && <Proficiencies character={props.character}/>
+            page===1 && <Proficiencies reload={props.reload} character={props.character}/>
         ]}<p className="Form">Page:
             <button onClick={()=>{changePage(0)}}>1</button>
             <button onClick={()=>{changePage(1)}}>2</button>
@@ -92,7 +95,7 @@ function ExistingGeneralInfo(props){
     const [cha, changeCha] = useState(character.cha)//need to implement for maximum levels etc.
     const [rename, toggleRename] = useState(false)
     const [name, changeName] = useState(character.name)
-    const [delCharacter, {loading:delLoading, data:delData}] = useMutation(deleteCharacter, {variables:{character:character._id, user:character.user, campaign:character.campaign}})
+    const [delCharacter, {loading:delLoading, data:delData}] = useMutation(deleteCharacter, {variables:{character:character._id, user:character.user._id, campaign:character.campaign}})
     const [updateInfo, {loading:infoLoading, data:infoData}] = useMutation(updateCharacterInfo, {variables:{id:character._id, name:name, campaign:campaign}})
     const [updateStats, {loading:statsLoading, data:statsData}] = useMutation(updateCharacterStats, {variables:{id:character._id, class:charClass, cha:parseInt(cha), con:parseInt(con), str:parseInt(str), dex:parseInt(dex), int:parseInt(int), wis:parseInt(wis)}})
     const [badStats, setBadStats] = useState(false)
@@ -107,7 +110,7 @@ function ExistingGeneralInfo(props){
 
     while(delLoading||infoLoading||statsLoading){
         if(delLoading){
-            console.log(character._id, character.user, character.campaign)
+            console.log(character._id, character.user._id, character.campaign)
         }
         return(<p>loading</p>)
     }
@@ -146,51 +149,66 @@ function ExistingGeneralInfo(props){
 }
 
 function Proficiencies(props){//works(only for first set of choices), just needs submit button
+    console.log(props.character.skills)
     const {data, loading} = useQuery(getClass, {variables:{index:props.character.class}})
-    const [chosen, updateChosen] = useState(0)
-    const [chosenOptions, changeChosen] = useState([])
     const [defaults, changeDefaults] = useState([])
+    const [options, changeOptions] = useState([])
+    const [updated, changeUpdated] = useState(false)
     useEffect(()=>{
-        if (!(data===null||data===undefined) && loading===false){
-            changeChosen(data.class.proficiency_choices[0].from.map(()=>{return null}))
+        if (!(data===null||data===undefined) && loading===false && updated===false){
             changeDefaults(data.class.proficiencies.map((currentValue)=>{return currentValue.name}))
+            changeOptions(data.class.proficiency_choices.map((current, index)=>{
+                return <ProficienciesChooseFrom defaults={data.class.proficiencies.map((currentValue)=>{return currentValue.index})} character={props.character} options={data.class.proficiency_choices[index]} reload={props.reload}/>
+            }))
+            changeUpdated(true)
         }
-    },[data, loading, props.classes])
+    },[data, loading, props, props.character, props.classes, updated])
     while(loading){
         return(<p>Loading data...</p>)
     }
-    if (!(data===null||data===undefined) && loading===false){
-        const charClass = data.class
-        const options = charClass.proficiency_choices[0]
-        function choose(checkbox){
-            if(checkbox.checked){
-                if(chosen+1 <= options.choose){
-                    updateChosen(Number.parseInt(chosen+1))
-                    changeChosen(chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return checkbox.id}else{return currentValue}}))
-                }else{
-                    checkbox.checked = false
-                }
-            }else{
-                updateChosen(chosen-1)
-                changeChosen(chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return null}else{return currentValue}}))
-            }
-        }
-        const profOptions = options.from.map((currentValue, index)=>{
-            return(<><input type="checkbox" name={index} id={currentValue.index} onChange={(e)=>{choose(e.target)}}/><label for={index}>{currentValue.name}</label></>)
-        })
+    return(<>{options}<p>{defaults}</p></>)
+}
+
+function ProficienciesChooseFrom(props){
+    const [chosenOptions, changeChosen] = useState(props.options.from.map((currentValue, index)=>{if(props.character.skills.includes(currentValue.index)){return currentValue.index}else{return null}}))
+    const [chosen, updateChosen] = useState(chosenOptions.filter(current => current!==null).length)
+    const [updateSkills, {data:infoData}] = useMutation(updateCharacterSkills, {variables:{id:props.character._id, skills:Array.prototype.concat(props.defaults, chosenOptions.filter(current => current!==null))}})
+    const profOptions = (props.options.from.map((currentValue, index)=>{//trying to get preselection to work based on db data
         return (<>
-            <p>Choose {options.choose}:</p>
-            <form>
-                {profOptions}
-            </form>
-            <p>{defaults}</p>
+            <input type="checkbox" defaultChecked={props.character.skills.includes(currentValue.index)} name={index} id={currentValue.index} onChange={(e)=>{choose(e.target)}}/>
+            <label for={index}>{currentValue.name}</label>
         </>)
+    }))
+
+    function choose(checkbox){
+        var newer = []
+        var newnumber = chosen
+        if(checkbox.checked){
+            if(chosen+1 <= props.options.choose){
+                newnumber++
+                newer = chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return checkbox.id}else{return currentValue}})
+            }else{
+                checkbox.checked = false
+                newer = chosenOptions
+            }
+        }else{
+            newnumber--
+            newer = chosenOptions.map((currentValue, index)=>{if(index === Number.parseInt(checkbox.name)){return null}else{return currentValue}})
+        }
+        changeChosen(newer)
+        updateChosen(newnumber)
     }
-    return(<p></p>)
+    
+    return (props.options.from[0].type==="Skills" && <>
+         <p>Choose {props.options.choose}:</p>
+        <form onSubmit={(e)=>{e.preventDefault();updateSkills();props.reload()}}>
+            {profOptions}<input type="submit"/>
+        </form>
+    </>)
 }
 
 function ClassSelect(props){
-    let classOptions = arrayToOptions(props.classes, props.current)
+    let classOptions = arrayToOptions(props.classes)
     return(
         <label htmlFor="class" className="tbLabel">Class:
             <select id="classes" required={true} name="classes" onChange={(e)=>{props.changeClass(props.classes[e.target.selectedIndex].index)}} defaultValue={props.current}>
@@ -214,7 +232,10 @@ function RaceSelect(props){
 }
 
 function CampaignSelect(props){
-    const campaignOptions = arrayToOptions(props.campaigns, props.current)
+    const campaignOptions = arrayToOptions(props.campaigns)
+    if(props.campaigns.length===1){
+        props.changeCampaign(props.campaigns[0]._id)
+    }
     return(<>
         <label htmlFor="campaigns" className="tbLabel">Campaign:
             <select id="campaigns" name="campaigns" selectedIndex="0" required={true} onChange={(e)=>{props.changeCampaign(props.campaigns[e.target.selectedIndex]._id)}} defaultValue={props.current}>
