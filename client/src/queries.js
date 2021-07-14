@@ -39,6 +39,7 @@ export const getUserByID = gql`
     user(id: $id){
       _id
       name
+      username
       campaigns{
         _id
         name
@@ -92,6 +93,14 @@ export const getCampaign = gql`
     campaign(id:$id){
       name
       dm
+      characters{
+        name
+        user{
+          _id
+          name
+          username
+        }
+      }
     }
   }
 `;
@@ -107,6 +116,14 @@ export const addCampaign = gql`
 export const joinExistingCampaign = gql`
   mutation joinExistingCampaign($id:String, $user:String){
       joinCampaign(id:$id, user:$user){
+        name
+      }
+  }
+`;
+
+export const leaveCampaign = gql`
+  mutation leaveCampaign($campaign:String, $user:String){
+      leaveCampaign(campaign:$campaign, user:$user){
         name
       }
   }
@@ -130,7 +147,9 @@ export const getCharacter = gql`
   query getCharacter($id:String){
     character(id:$id){
       _id
-      user
+      user{
+        _id
+      }
       campaign
       name
       race
@@ -144,6 +163,7 @@ export const getCharacter = gql`
       int
       str
       wis
+      skills
     }
   }
 `;
@@ -176,6 +196,16 @@ export const updateCharacterStats = gql`
   }
 `;
 
+export const updateCharacterSkills = gql`
+  mutation updateCharacterSkills($id:String, $skills:[String]){
+    updateCharacterSkills(id:$id, skills:$skills){
+      _id
+      campaign
+      name
+    }
+  }
+`;
+
 export const deleteCharacter = gql`
   mutation deleteCharacter($user:String, $campaign:String, $character:String){
     deleteCharacter(user:$user, campaign:$campaign, character:$character)
@@ -197,6 +227,7 @@ export const getClass = gql`
       index
       name
       proficiencies{
+        index
         name
       }
       proficiency_choices{
@@ -204,6 +235,7 @@ export const getClass = gql`
         from{
           index
           name
+          type
           races{
             index
           }
@@ -276,7 +308,9 @@ export const currentSession = gql`
         _id
         position
         character{
-          user
+          user{
+            _id
+          }
           name
           race
           background
@@ -304,7 +338,9 @@ export const onSessionUpdate = gql`
         _id
         position
         character{
-          user
+          user{
+            _id
+          }
           name
           race
           background
