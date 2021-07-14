@@ -23,7 +23,7 @@ const resolvers = {
             return Campaign.find().populate('characters');
         },
         campaign(root, args, context){
-            return Campaign.findOne({_id:Mongoose.Types.ObjectId(args.id)}).populate('characters');
+            return Campaign.findOne({_id:Mongoose.Types.ObjectId(args.id)}).populate({path:'characters', populate:{path:'user'}})
         },
         characters(root, args, context){
             return Character.find();
@@ -92,17 +92,19 @@ const resolvers = {
             await Campaign.findById(args.id)
             return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}}, {new:true})
         },
-        async leaveCampaign(root, args, context){//needs work, doesnt remove user from campaign
-            const user = await User.findByIdAndUpdate(Mongoose.Types.ObjectId(args.user), {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}}).populate('characters')
-            Campaign.findByIdAndUpdate(args.campaign, {$pull:{players:Mongoose.Types.ObjectId(args.user)}})
+        async leaveCampaign(root, args, context){
+            const user = await User.findByIdAndUpdate(Mongoose.Types.ObjectId(args.user), {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}}, {new:true}).populate('characters')
+            await Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$pull:{players:Mongoose.Types.ObjectId(args.user)}})
             await user.characters.forEach(element => {
-                console.log(typeof element._id, typeof Mongoose.Types.ObjectId(args.campaign))
                 if (String(element.campaign) === String(args.campaign)){
-                    Character.findByIdAndUpdate(element._id, {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}})
-                    Campaign.findByIdAndUpdate(args.campaign, {$pull:{characters:Mongoose.Types.ObjectId(String(element._id))}})
+                    console.log(Mongoose.Types.ObjectId(element._id))//shows in console
+                    Campaign.findByIdAndUpdate(Mongoose.Types.ObjectId(args.campaign), {$pull:{characters:Mongoose.Types.ObjectId(element._id)}})//THIS DOESN'T EVEN RUN WHEN THE SPECIFIC CHARACTER ID IS USED
+                    Character.findByIdAndUpdate(element._id, {$set:{campaign:null}})//setting to null doesnt work
+                    console.log("match")
                 }
             })
-            return "done"
+            console.log("done", args.user, args.campaign)
+            return await Campaign.findById(args.campaign).populate({path:'characters', populate:{path:'user'}})
         },
         async deleteCampaign(root, args, context){
             const campaign = await Campaign.findById(args.campaign)
@@ -112,7 +114,7 @@ const resolvers = {
                     User.findByIdAndUpdate(element, {$pull:{campaigns:Mongoose.Types.ObjectId(args.campaign)}})
                 })
                 await campaign.characters.forEach(element => {
-                    Character.findByIdAndUpdate(element, {$set:{campaign:null}})
+                    Character.findByIdAndUpdate(element, {$set:{campaign:null}})//this doesn't work, check for null campaign may just have to be on the client side
                 })
                 await Campaign.findByIdAndDelete(args.campaign)
             }
@@ -157,6 +159,10 @@ const resolvers = {
         },
         async updateCharacterStats(root, args, context){
             return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{class:args.class, cha:args.cha, con:args.con, dex:args.dex, int:args.int, str:args.str, wis:args.wis}}, {new:true})
+        },
+        async updateCharacterSkills(root, args, context){
+            console.log("sent")
+            return await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{skills:args.skills}}, {new:true})
         },
         async deleteCharacter(root, args, context){
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$pull:{characters:args.character}})

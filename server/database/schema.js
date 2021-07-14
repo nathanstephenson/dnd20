@@ -7,7 +7,7 @@ const typeDefs = gql`
     
     type Character {
         _id: ID!
-        user: ID
+        user: User
         campaign: ID
         name: String
         race: String,
@@ -22,7 +22,7 @@ const typeDefs = gql`
         str: Int,
         wis: Int,
         items: [String],
-        proficiencies: [String],
+        skills: [String],
     }
 
     type Campaign {
@@ -88,13 +88,14 @@ const typeDefs = gql`
         clearUsers:String
         addCampaign(dm:String, name:String): Campaign
         joinCampaign(id:String, user:String):Campaign
-        leaveCampaign(campaign:String, user:String):String
+        leaveCampaign(campaign:String, user:String):Campaign
         deleteCampaign(user:String, dm:String, campaign:String): String
         renameCampaign(id:String, name:String): Campaign
         addCharacter(user:String, campaign:String, name:String, race:String, background:String): Character
         deleteCharacter(user:String, character:String, campaign:String):String
         updateCharacterInfo(id:String, name:String, campaign:String):Character
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
+        updateCharacterSkills(id:String, skills:[String]):Character
         createSession(campaign:String, user:String):Session
         endSession(campaign:String, user:String):String
         changeCharacterPos(session:String, character:String, position:Int):String
