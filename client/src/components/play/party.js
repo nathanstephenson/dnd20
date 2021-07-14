@@ -6,11 +6,9 @@ import { changeCharacterHealth } from '../../queries'
 export function PartyCharacters(props){
     const {user} = useContext(UserContext)
     const session = props.session
-    const myCharacter = session.characters.map((currentValue, index)=>{if(currentValue.character.user===user._id){return <CharacterInfo key={index} character={currentValue} sessionID={session._id} currentUser={user._id}/>}})
-    const partyCharacters = session.characters.map((currentValue, index)=>{if(currentValue.character.user!==user._id){return <CharacterInfo key={index} character={currentValue} sessionID={session._id} currentUser={user._id}/>}})
+    const partyCharacters = session.characters.map((currentValue, index)=>{return <CharacterInfo key={index} character={currentValue} sessionID={session._id} currentUser={user._id}/>})
     return (
         <>
-            {myCharacter}
             {(session.characters.length===0) && <p>No characters in this party.</p>}
             {(session.characters.length!==0) && partyCharacters}
         </>
@@ -25,7 +23,7 @@ function CharacterInfo(props){
         <ul>
             <li key="hp">
                 <p>{character.hp}</p>
-                {character.user===props.currentUser && <>
+                {character.user._id===props.currentUser && <>
                     <button onClick={()=>{changeHealth({variables:{hp:character.hp+1}})}}>+</button>
                     <button onClick={()=>{changeHealth({variables:{hp:character.hp-1}})}}>-</button>
                 </>}
