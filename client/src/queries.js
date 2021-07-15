@@ -34,6 +34,12 @@ export const getUserID = gql`
   }
 `;
 
+export const doesUserExist = gql`
+  query doesUserExist($username:String){
+    doesUserExist(username:$username)
+  }
+`;
+
 export const getUserByID = gql`
   query getUserByID($id: String){
     user(id: $id){
@@ -100,6 +106,19 @@ export const getCampaign = gql`
           name
           username
         }
+      }
+    }
+  }
+`;
+
+export const getCampaignPlayers = gql`
+  query getCampaignPlayers($campaign:String){
+    players(campaign:$campaign){
+      _id
+      name
+      characters{
+        name
+        campaign
       }
     }
   }
