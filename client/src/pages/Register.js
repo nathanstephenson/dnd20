@@ -96,7 +96,7 @@ function AddUser(props){
 		}else if(queryData.doesUserExist===true && !queryLoading){
 			console.log("user already exists", queryData.getUserID)
 			return (
-				<p>Error: User already exists, try again</p>
+				<p>Error: Username already exists, try again</p>
 			);
 		}
 	}
