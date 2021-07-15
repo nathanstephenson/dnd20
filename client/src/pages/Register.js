@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useQuery, useMutation} from '@apollo/client'
 import '../App.css';
 import { Link } from "react-router-dom";
-import {addUser, getUserID} from '../queries';
+import {addUser, doesUserExist, getUserID} from '../queries';
 
 
 
@@ -77,12 +77,12 @@ class Register extends React.Component {
 }
 
 function AddUser(props){
-	const {data:queryData, loading:queryLoading} = useQuery(getUserID, {variables: {username:props.username, password:props.password}}, {fetchPolicy:'network-only'});//check email instead of password here, as password does not need to be unique
+	const {data:queryData, loading:queryLoading} = useQuery(doesUserExist, {variables: {username:props.username}}, {fetchPolicy:'network-only'});//check email instead of password here, as password does not need to be unique
 	const [newUser, { data, loading }] = useMutation(addUser);
 	while (queryLoading||loading) {console.log("loading");return(<p>Loading...</p>)}
 	console.log(queryData.getUserID)
 	if(queryData!==undefined){
-		if(queryData.getUserID===null && !queryLoading){//apparently here cannot read 'undefined' user, but that same method works in login???
+		if(queryData.doesUserExist===false && !queryLoading){//apparently here cannot read 'undefined' user, but that same method works in login???
 			console.log("user doesn't already exist")
 			if(data===undefined){
 				console.log("adding user")
@@ -93,7 +93,7 @@ function AddUser(props){
 					<p>Welcome, {props.name}</p>
 				</>);
 			}
-		}else if(queryData.getUserID!==null && !queryLoading){
+		}else if(queryData.doesUserExist===true && !queryLoading){
 			console.log("user already exists", queryData.getUserID)
 			return (
 				<p>Error: User already exists, try again</p>
