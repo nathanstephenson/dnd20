@@ -156,7 +156,7 @@ function Proficiencies(props){//works(only for first set of choices), just needs
     const [updated, changeUpdated] = useState(false)
     useEffect(()=>{
         if (!(data===null||data===undefined) && loading===false && updated===false){
-            changeDefaults(data.class.proficiencies.map((currentValue)=>{return currentValue.name}))
+            changeDefaults(data.class.proficiencies.map((currentValue, index)=>{if(index===0){return currentValue.index}else{return ", "+currentValue.index}}))
             changeOptions(data.class.proficiency_choices.map((current, index)=>{
                 return <ProficienciesChooseFrom defaults={data.class.proficiencies.map((currentValue)=>{return currentValue.index})} character={props.character} options={data.class.proficiency_choices[index]} reload={props.reload}/>
             }))
@@ -166,7 +166,7 @@ function Proficiencies(props){//works(only for first set of choices), just needs
     while(loading){
         return(<p>Loading data...</p>)
     }
-    return(<>{options}<p>{defaults}</p></>)
+    return(<><h3>Proficiencies</h3>{options}<p>Defaults: {defaults}</p></>)
 }
 
 function ProficienciesChooseFrom(props){
