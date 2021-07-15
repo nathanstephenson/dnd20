@@ -24,7 +24,7 @@ function Campaign(props){
             <p key="c1" className="campaign-name">{props.campaign.name}</p>
             <ul><li key="editButton">
                 {props.purpose==="Edit" && <button onClick={() => props.changeSelected(props.campaign._id)}>
-                    Edit
+                    ...
                 </button>}
             </li></ul>
         </div>
