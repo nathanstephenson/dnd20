@@ -1,8 +1,8 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useMutation, useQuery} from '@apollo/client'
 import '../../App.css';
 import {UserContext} from '../../misc/UserContext'
-import {getCampaign, renameCampaign, deleteCampaign, leaveCampaign} from '../../queries'
+import {getCampaign, getCampaignPlayers, renameCampaign, deleteCampaign, leaveCampaign} from '../../queries'
 
 export default class EditCampaign extends React.Component {
     constructor(props) {
@@ -59,7 +59,7 @@ export default class EditCampaign extends React.Component {
                     </div>}
                     {(this.state.loaded && !this.state.submit) && <><img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
                         <h1 className="title">
-                            Edit Campaign: {this.state.campaign.name}
+                            Campaign: {this.state.campaign.name}
                         </h1>
                         {isDM && <>{<div>{<><RemovePlayers ID={this.campaignID}/><br/></>}
                         {this.state.showID ? <><p>{this.campaignID}<button onClick={this.toggleID}>x</button></p></> : <button onClick={this.toggleID}>Show ID</button>}
@@ -142,22 +142,23 @@ function LeaveCampaign(props){
 
 function RemovePlayers(props){
     const {user} = useContext(UserContext)
-    const { data, loading, refetch } = useQuery(getCampaign, {variables:{id:props.ID}, notifyOnNetworkStatusChange:'true'})
+    const { data, loading, refetch } = useQuery(getCampaignPlayers, {variables:{campaign:props.ID}, notifyOnNetworkStatusChange:'true'})
     const [removePlayer, { data:response, loading:waitingResponse }] = useMutation(leaveCampaign)//this method means it only gets added once
     const [players, updatePlayers] = useState([])
-    useState(()=>{
+    useEffect(()=>{
         if(loading||waitingResponse){
             console.log("loading")
         }
         if(data!==undefined && loading===false){
             if(data!==null){
-                console.log(data.campaign)
-                if(data.campaign===null){
+                console.log(data.players)
+                if(data.players===null){
                     refetch()
                 }else{
-                    updatePlayers(data.campaign.characters.map((value, index)=>{
-                        if(value.user._id!==user._id){
-                            return <button onClick={()=>{removePlayer({variables:{user:value.user._id, campaign:props.ID}});refetch()}}>Remove {value.user.name}</button>
+                    updatePlayers(data.players.map((value, index)=>{
+                        if(value._id!==user._id){
+                            const matchingChar = value.characters.filter(char => String(char.campaign)===props.ID)[0]
+                            return <button onClick={()=>{removePlayer({variables:{user:value._id, campaign:props.ID}});refetch()}}>Remove {value.name}</button>
                         }else{return null}
                     }))
                 }
