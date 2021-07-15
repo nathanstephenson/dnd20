@@ -15,6 +15,10 @@ const resolvers = {
         user(root, args, context){
             return User.findById(args.id).populate('characters').populate('campaigns');
         },
+        async doesUserExist(root, args, context){
+            const user = await User.findOne({username: args.username})
+            if(user!==null){return true}else{return false}
+        },
         async getUserID(root, args, context){
             const user = await User.findOne({username: args.username, password: args.password})
             if(user!==null){return user._id}else{return undefined}
@@ -24,6 +28,17 @@ const resolvers = {
         },
         campaign(root, args, context){
             return Campaign.findOne({_id:Mongoose.Types.ObjectId(args.id)}).populate({path:'characters', populate:{path:'user'}})
+        },
+        async players(root, args, context){
+            const campaign = await Campaign.findOne({_id:Mongoose.Types.ObjectId(args.campaign)})
+            //console.log(campaign)
+            const players = []
+            for (let i = 0; i < campaign.players.length; i++){
+                const u = await User.findById(campaign.players[i]).populate('characters')
+                players.push(u)
+            }
+            //console.log(players)
+            return players
         },
         characters(root, args, context){
             return Character.find();

@@ -64,12 +64,14 @@ const typeDefs = gql`
     }
 
     type Query {
+        doesUserExist(username:String): Boolean
         getUserID(username:String, password:String):String
         user(id:String): User
         users: [User]
         campaign(id:String): Campaign
         campaignByID(id:String): Campaign
         campaigns: [Campaign]
+        players(campaign:String):[User]
         character(id:String): Character
         characters: [Character]
         classes: [Class]
