@@ -57,11 +57,11 @@ export default class EditCampaign extends React.Component {
                     {(!this.state.loaded && !this.state.submit) && <div>
                         <LoadCampaign ID={this.campaignID} return={this.returnCampaign}/>
                     </div>}
-                    {isDM && <>{(this.state.loaded && !this.state.submit) && <div><img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
+                    {(this.state.loaded && !this.state.submit) && <><img src="images/Nooth_DnD.png" className="App-logo" alt="logo" />
                         <h1 className="title">
-                            Edit Campaign 
+                            Edit Campaign: {this.state.campaign.name}
                         </h1>
-                        {<><RemovePlayers ID={this.campaignID}/><br/></>}
+                        {isDM && <>{<div>{<><RemovePlayers ID={this.campaignID}/><br/></>}
                         {this.state.showID ? <><p>{this.campaignID}<button onClick={this.toggleID}>x</button></p></> : <button onClick={this.toggleID}>Show ID</button>}
                         <button onClick={this.delete}>Delete this campaign</button><br/><br/>
                         <form className="Form" onSubmit={this.submit}>
@@ -69,7 +69,7 @@ export default class EditCampaign extends React.Component {
                             <input type="name" id="name" name="name" required={true} onChange={this.handleNameChange} value={this.state.name}/></label><br/></div>
                             <input type="submit" value="Submit"/>
                         </form><br/>
-                    </div>}</>}
+                    </div>}</>}</>}
                     {(!isDM ) && <LeaveCampaign ID={this.campaignID} back={this.props.back}/>}
                     {this.state.submit && <SubmitCampaign submitted={this.submitted} id={this.campaignID} name={this.state.name}/>} 
                     {this.state.delete && <DeleteCampaign submitted={this.submitted} dm={this.state.campaign.dm} campaignID={this.campaignID}/>}

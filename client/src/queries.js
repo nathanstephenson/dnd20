@@ -116,6 +116,7 @@ export const addCampaign = gql`
 export const joinExistingCampaign = gql`
   mutation joinExistingCampaign($id:String, $user:String){
       joinCampaign(id:$id, user:$user){
+        _id
         name
       }
   }
