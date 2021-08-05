@@ -319,6 +319,12 @@ export const changeCharacterHealth = gql`
   }
 `;
 
+export const changeCharacterPos = gql`
+  mutation changeCharacterPos($session:String, $character:String, $position:Int){
+    changeCharacterPos(session:$session, character:$character, position:$position)
+  }
+`;
+
 export const currentSession = gql`
   query currentSession($id:String){
     session(id:$id){
