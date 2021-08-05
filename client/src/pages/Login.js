@@ -18,7 +18,8 @@ export default function Login(props) {
             props.handleLogin(id)
         }
         if(!loading && called && id===null){
-            if(data!==undefined){
+            console.log(data)
+            if(data!==undefined && data.getUserID!==null){
                 setID(data.getUserID)
             }else{
                 toggleBadLogin(true)
