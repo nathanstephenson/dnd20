@@ -3,8 +3,9 @@ import { useSubscription, Subscription, useQuery } from '@apollo/client';
 import '../App.css';
 import {UserContext} from '../misc/UserContext'
 import {currentSession, getUserID, onSessionUpdate} from '../queries'
+import {DisplayCharacters} from '../components/characters/DisplayCharacters';
 import {PartyCharacters} from '../components/play/party'
-import { DisplayCharacters } from '../components/characters/DisplayCharacters';
+import {Map} from '../components/play/map';
 
 export default function Play(props) {
     const {user} = useContext(UserContext)
@@ -47,6 +48,7 @@ function PlayView(props){
             {data!==undefined ? 
                 <div className="play">
                     <PartyCharacters session={data}/>
+                    <Map session={data}/>
                 </div>
                 : <p>No characters in this party.</p>
             }
