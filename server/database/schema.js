@@ -64,6 +64,7 @@ const typeDefs = gql`
     }
 
     type Query {
+        rollDie(sides:Int): Int
         doesUserExist(username:String): Boolean
         getUserID(username:String, password:String):String
         user(id:String): User
