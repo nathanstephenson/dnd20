@@ -1,0 +1,33 @@
+.grid {
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.square {
+    display: contents;
+}
+
+.grid-square {
+    outline: 2px solid black;
+    fill: white;
+}
+
+.grid-square-bg {
+    fill-opacity: 100%;
+    fill: #949494;
+}
+
+.grid-square-fg:not(:hover) {
+    fill-opacity: 0%;
+}
+
+.grid-square-fg:hover {
+    fill: #32a852;
+    fill-opacity: 70%;
+}
