@@ -9,6 +9,10 @@ const pubsub = new PubSub()//only works for a single server instance, so would n
 
 const resolvers = {
     Query: {
+        rollDie(root, args, context){
+            var n = (Math.random())*args.sides
+            return Math.floor(n+1)
+        },
         users(root, args, context){
             return User.find().populate('campaigns');
         },
@@ -19,7 +23,7 @@ const resolvers = {
             const user = await User.findOne({username: args.username})
             if(user!==null){return true}else{return false}
         },
-        async getUserID(root, args, context){
+        async getUserID(root, args, context){ 
             const user = await User.findOne({username: args.username, password: args.password})
             if(user!==null){return user._id}else{return undefined}
         },
@@ -33,11 +37,13 @@ const resolvers = {
             const campaign = await Campaign.findOne({_id:Mongoose.Types.ObjectId(args.campaign)})
             //console.log(campaign)
             const players = []
-            for (let i = 0; i < campaign.players.length; i++){
-                const u = await User.findById(campaign.players[i]).populate('characters')
-                players.push(u)
+            if(campaign.players.length >= 1){
+                for (let i = 0; i < campaign.players.length; i++){
+                    const u = await User.findById(campaign.players[i]).populate('characters')
+                    players.push(u)
+                }
             }
-            //console.log(players)
+            console.log(players)
             return players
         },
         characters(root, args, context){
@@ -104,7 +110,6 @@ const resolvers = {
         async joinCampaign(root, args, context){
             //need to wipe character from other campaigns and sessions before this
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{campaigns:Mongoose.Types.ObjectId(args.id)}})
-            await Campaign.findById(args.id)
             return await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$addToSet:{players:Mongoose.Types.ObjectId(args.user)}}, {new:true})
         },
         async leaveCampaign(root, args, context){
@@ -142,11 +147,13 @@ const resolvers = {
             const newID = Mongoose.Types.ObjectId()
             await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$addToSet:{characters:newID}})
             const campaign = await Campaign.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.campaign)}, {$addToSet:{characters:newID}})
-            await Session.findByIdAndUpdate(campaign.currentSession, {$addToSet:{characters:{
-                _id: newID,
-                character: newID,
-                position: 0,
-            }}})
+            if(campaign.session !== null){
+                await Session.findByIdAndUpdate(campaign.currentSession, {$addToSet:{characters:{
+                    _id: newID,
+                    character: newID,
+                    position: 0,
+                }}})
+            }
             return await Character.create({
                 _id: newID,
                 user: Mongoose.Types.ObjectId(args.user),
@@ -168,7 +175,16 @@ const resolvers = {
             const char = await Character.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.id)}, {$set:{name:args.name, campaign:args.campaign}})
             if(Mongoose.Types.ObjectId(args.campaign) != char.campaign){
                 await Campaign.findByIdAndUpdate(char.campaign, {$pull:{characters:Mongoose.Types.ObjectId(args.id)}})
-                await Campaign.findByIdAndUpdate(args.campaign, {$addToSet:{characters:Mongoose.Types.ObjectId(args.id)}})
+                const campaign = await Campaign.findByIdAndUpdate(args.campaign, {$addToSet:{characters:Mongoose.Types.ObjectId(args.id)}}, {new:true})
+                //session update for joining an active campaign
+                if(campaign.session !== null){
+                    await Session.findByIdAndUpdate(campaign.currentSession, {$addToSet:{characters:{
+                        _id: newID,
+                        character: newID,
+                        position: 0,
+                    }}})
+                    await pubsub.publish('SESSION_UPDATED', payload)
+                }
             }
             return await Character.findById(args.id)
         },
