@@ -212,7 +212,7 @@ const resolvers = {
                     characters.push({
                         _id: Mongoose.Types.ObjectId(character._id),
                         character: Mongoose.Types.ObjectId(character._id),
-                        position: 0,
+                        position: campaign.characters.indexOf(character),
                     })
                 }
                 return await Session.create({
