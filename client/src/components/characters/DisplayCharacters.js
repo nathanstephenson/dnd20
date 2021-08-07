@@ -51,7 +51,7 @@ function Character(props){
                     {props.purpose==="Edit" && <button onClick={() => props.changeSelected(props.character._id)}>
                         Edit
                     </button>}
-                    {((props.purpose==="Play" && props.campaign!==undefined) && props.campaign.currentSession!==null) && <button onClick={() => props.changeSelected(props.campaign.currentSession)}>
+                    {((props.purpose==="Play" && props.campaign!==undefined) && props.campaign.currentSession!==null) && <button onClick={() => {props.changeSelected(props.campaign.currentSession, props.character._id)}}>
                         Play
                     </button>}
                 </li>

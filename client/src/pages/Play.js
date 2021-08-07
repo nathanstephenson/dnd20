@@ -9,12 +9,18 @@ import {Map} from '../components/play/map';
 
 export default function Play(props) {
     const {user} = useContext(UserContext)
-    const [selected, changeSelected] = useState(null)
+    const [selectedSession, changeSession] = useState(null)
+    const [selectedCharacter, changeCharacter] = useState(null)
     const [needsRefresh, setNeedsRefresh] = useState(false)
     const [needsRefetch, setNeedsRefetch] = useState(true)
 
+    function changeSelected(session, character){
+        changeSession(session)
+        changeCharacter(character)
+    }
+
     return (<header className="App-header">
-        {selected!==null ? <PlayView sessionID={selected} needsRefetch={needsRefetch} refetched={()=>{setNeedsRefetch(false)}}/> : <DisplayCharacters needsRefresh={needsRefresh} refreshed={()=>{setNeedsRefresh(true)}} changeSelected={changeSelected} purpose="Play"/>}
+        {selectedSession!==null ? <PlayView sessionID={selectedSession} characterID={selectedCharacter} needsRefetch={needsRefetch} refetched={()=>{setNeedsRefetch(false)}}/> : <DisplayCharacters needsRefresh={needsRefresh} refreshed={()=>{setNeedsRefresh(true)}} changeSelected={changeSelected} purpose="Play"/>}
     </header>)
 }
 
@@ -47,11 +53,10 @@ function PlayView(props){
             <h2>Play the game</h2>
             {data!==undefined ? 
                 <div className="play">
-                    <PartyCharacters session={data}/>
-                    <Map session={data}/>
+                    <PartyCharacters session={data} character={props.characterID}/>
+                    <Map session={data} character={props.characterID}/>
                 </div>
-                : <p>No characters in this party.</p>
-            }
+            : <p>No characters in this party.</p>}
         </>
     )
 }
