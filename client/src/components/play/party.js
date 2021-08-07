@@ -17,16 +17,16 @@ export function PartyCharacters(props){
 
 function CharacterInfo(props){
     const character = props.character.character
-    const [changeHealth, {data}] = useMutation(changeCharacterHealth, {variables:{session:props.sessionID, character:props.character._id}})
+    const [changeHealth, {data}] = useMutation(changeCharacterHealth)
     return (<div className="campaign">
         <p key="c1" className="campaign-name">{character.name}</p>
         <ul>
             <li key="hp">
-                <p>{character.hp}</p>
+                <p>{character.hp}HP
                 {character.user._id===props.currentUser && <>
-                    <button onClick={()=>{changeHealth({variables:{hp:character.hp+1}})}}>+</button>
-                    <button onClick={()=>{changeHealth({variables:{hp:character.hp-1}})}}>-</button>
-                </>}
+                    <button onClick={()=>{changeHealth({variables:{session:props.sessionID, character:props.character._id, hp:character.hp+1}})}}>+</button>
+                    <button onClick={()=>{changeHealth({variables:{session:props.sessionID, character:props.character._id, hp:character.hp-1}})}}>-</button>
+                </>} at position {props.character.position}</p>
             </li>
         </ul>
     </div>)
