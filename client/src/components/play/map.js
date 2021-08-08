@@ -13,34 +13,68 @@ export function Map(props){
     const pWidth = 35
     const [rows, setRows] = useState()
     const [changePos, {data, loading}] = useMutation(changeCharacterPos)
-    
     let grid = []
+
     useEffect(()=>{
         function select(e){
+            const squareOccupied = e.target.id!==""
+            const square = e.target
+            console.log(square)
             const n = Number.parseInt(e.target.attributes.name.value)
-            changePos({variables: {session:session._id, character:props.character, position:n}})
+            const playersHere = props.session.characters.filter(el => el.position===n)
+            if(!squareOccupied){
+                changePos({variables: {session:session._id, character:props.character, position:n}})
+            }else if(square.id===props.character){
+                alert("that's me")
+            }else if(playersHere.length>0){
+                alert("that's "+playersHere[0].character.name)
+            }else{
+                alert("obstructed")
+            }
         }
+        function hover(e){
+            const squareOccupied = e.target.id!==""
+            const style = document.querySelector(':root').style
+            if(squareOccupied){
+                style.setProperty('--hover', 'var(--hover-bad)')
+            }else{
+                style.setProperty('--hover', 'var(--hover-good)')
+            }
+        }
+
         for(let row=0;row<h;row++){
             let line = []
             for(let column=0;column<w;column++){//each square in the grid
+                let initial = ""
                 let image = ""
                 const i = row*w + column
                 const here = props.session.characters.filter(el => el.position===i)
                 if(here.length>0){
                     console.log(here, here[0].position)
-                    image = "images/Nooth_DnD.png"
+                    initial = here[0].character.name[0]
+                    if(initial === "D"){
+                        image = "images/Nooth_DnD.png"
+                    }
+                    //image = "images/Nooth_DnD.png"
                 }else{
+                    initial = ""
                     image = ""
                 }
-                const occupied = here.length>0
+                function getID(){
+                    if(here.length>0){
+                        return here[0]._id
+                    }else{
+                        return ""
+                    }
+                }
                 line.push(
-                    <div width={pWidth} height={pWidth} occupied={occupied} className="square">
+                    <div width={pWidth} height={pWidth} className="square">
                         <svg width={pWidth} height={pWidth} className="grid-square"><g>
-                            <rect width={pWidth} height={pWidth} id="rec" name={"bg"} className="grid-square-bg"/>
-                            <text width={pWidth} height={pWidth}>W</text> 
+                            <rect width={pWidth} height={pWidth} className="grid-square-bg"/>
+                            <text x={pWidth/5} y={pWidth/1.4} fill="black">{initial}</text> 
                             <image href={image} width={pWidth-1} height={pWidth-1}/>
-                            <rect width={pWidth} height={pWidth} id="rec" name={i} className="grid-square-fg" onClick={select}/>
-                        <p>W</p></g></svg>
+                            <rect width={pWidth} height={pWidth} id={getID()} name={i} className="grid-square-fg" onMouseOver={hover} onClick={select}/>
+                        </g></svg>
                     </div>
                 )
             } 
@@ -58,8 +92,6 @@ export function Map(props){
         }
         console.log(grid)
     },[]) */
-    
-
     return (
         <>
             <div width={w*pWidth} height={h*pWidth} id="grid" className="grid">{rows}</div>
