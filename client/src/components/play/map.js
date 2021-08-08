@@ -8,14 +8,16 @@ import { Int32 } from 'bson'
 export function Map(props){
     const {user} = useContext(UserContext)
     const session = props.session
-    const w = 20
-    const h = 15
+    const [w, changeW] = useState(0)
+    const [h, changeH] = useState(0)
     const pWidth = 35
     const [rows, setRows] = useState()
     const [changePos, {data, loading}] = useMutation(changeCharacterPos)
     let grid = []
 
     useEffect(()=>{
+        changeW(session.map.width)
+        changeH(session.map.height)
         function select(e){
             const squareOccupied = e.target.id!==""
             const square = e.target
@@ -36,12 +38,11 @@ export function Map(props){
             const squareOccupied = e.target.id!==""
             const style = document.querySelector(':root').style
             if(squareOccupied){
-                style.setProperty('--hover', 'var(--hover-bad)')
+                style.setProperty('--map-hover', 'var(--map-hover-bad)')
             }else{
-                style.setProperty('--hover', 'var(--hover-good)')
+                style.setProperty('--map-hover', 'var(--map-hover-good)')
             }
         }
-
         for(let row=0;row<h;row++){
             let line = []
             for(let column=0;column<w;column++){//each square in the grid

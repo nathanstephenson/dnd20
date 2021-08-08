@@ -1,3 +1,10 @@
+:root {
+    --map-hover-good: #008628;
+    --map-hover-bad: #be0000;
+
+    --map-hover: var(--map-hover-good);
+}
+
 .grid {
     display: flex;
     flex-direction: column;
@@ -15,12 +22,14 @@
 
 .grid-square {
     outline: 2px solid black;
-    fill: white;
+    fill: rgb(255, 0, 234);
 }
 
 .grid-square-bg {
+    
+    outline: 2px solid black;
     fill-opacity: 100%;
-    fill: #949494;
+    fill: var(--bg-primary);
 }
 
 .grid-square-fg:not(:hover) {
@@ -28,6 +37,6 @@
 }
 
 .grid-square-fg:hover {
-    fill: #32a852;
+    fill: var(--map-hover);
     fill-opacity: 70%;
 }
