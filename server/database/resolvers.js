@@ -4,8 +4,14 @@ const Campaign = require('./models/campaign');
 const Character = require('./models/character');
 const Session = require('./models/session');
 const User = require('./models/user');
+const Map = require('./models/map')
 
 const pubsub = new PubSub()//only works for a single server instance, so would need an alternative for cloud deployment
+async function publishSession(session){//pushes the session for live gameplay
+    const payload = await Session.findById(session).populate('characters.character').populate('map')//positional operator "$" makes sure the mutation happens to the corrent object in the array
+    await pubsub.publish('SESSION_UPDATED', payload)
+    return "done"
+}
 
 const resolvers = {
     Query: {
@@ -51,6 +57,9 @@ const resolvers = {
         },
         character(root, args, context){
             return Character.findOne({_id:Mongoose.Types.ObjectId(args.id)});
+        },
+        map(root, args, context){
+            return Map.findById(args.id)
         },
         async getCurrentSessionID(root, args, context){
             const campaign = await Campaign.findOne({_id:Mongoose.Types.ObjectId(args.campaign)});
@@ -202,6 +211,27 @@ const resolvers = {
             await Character.findByIdAndDelete(args.character)
             return "ran character deletion"
         },
+        async createMap(root, args, context){
+            const newID = Mongoose.Types.ObjectId()
+            await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.creator)}, {$addToSet:{maps:newID}})
+            return await Map.create({
+                _id: newID,
+                creator: Mongoose.Types.ObjectId(args.creator),
+                name: args.name,
+                width: args.width,
+                height: args.height,
+            })
+        },
+        async deleteMap(root, args, context){
+            const m = await Map.findById(args.map)
+            console.log(m.creator, args.user)
+            if(String(m.creator)===args.user){
+                console.log("match")
+                await User.findOneAndUpdate({_id:Mongoose.Types.ObjectId(args.user)}, {$pull:{maps:args.map}})
+                await Map.findByIdAndDelete(args.map)
+            }
+            return "ran map deletion"
+        },
         async createSession(root, args, context){//sometimes doesnt transfer all characters?
             const newID = Mongoose.Types.ObjectId()
             const campaign = await Campaign.findById(args.campaign)
@@ -217,6 +247,7 @@ const resolvers = {
                 }
                 return await Session.create({
                     _id: newID,
+                    dm: Mongoose.Types.ObjectId(args.user),
                     campaign: Mongoose.Types.ObjectId(args.campaign),
                     characters: characters
                 })
@@ -230,18 +261,18 @@ const resolvers = {
             return "done"
         },
         //play screen
+        async changeMap(root, args, context){
+            await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session)}, {$set: {'map': Mongoose.Types.ObjectId(args.map)}})
+            return await publishSession(args.session)
+        },
         async changeCharacterPos(root, args, context){
             await Session.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.session), 'characters._id': Mongoose.Types.ObjectId(args.character)}, {$set: {'characters.$.position': args.position}})
-            const payload = await Session.findById(args.session).populate('characters.character')//positional operator "$" makes sure the mutation happens to the corrent object in the array
-            await pubsub.publish('SESSION_UPDATED', payload)
-            return "done"
+            return await publishSession(args.session)
         },
         async changeCharacterHealth(root, args, context){
             await Character.findOneAndUpdate({_id: Mongoose.Types.ObjectId(args.character)}, {$set: {hp: args.hp}}, {new:true})//positional operator "$" makes sure the mutation happens to the corrent object in the array
-            const payload = await Session.findOne({_id: Mongoose.Types.ObjectId(args.session)}).populate('characters.character')
-            await pubsub.publish('SESSION_UPDATED', payload)
-            return "done"
-        }
+            return await publishSession(args.session)
+        },
     },
 
     Subscription: {

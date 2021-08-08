@@ -6,6 +6,7 @@ const campaignSchema = new Mongoose.Schema({
   dm: Mongoose.Schema.Types.ObjectId,
   players: [Mongoose.Schema.Types.ObjectId],
   characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Character' }],
+  maps: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Map' }],
   sessionHistory: [Mongoose.Schema.Types.ObjectId],
   currentSession: { type: Mongoose.Schema.Types.ObjectId, ref: 'Session' }
 });

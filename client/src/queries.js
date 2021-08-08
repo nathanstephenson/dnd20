@@ -329,6 +329,12 @@ export const currentSession = gql`
   query currentSession($id:String){
     session(id:$id){
       _id
+      dm
+      map{
+        name
+        width
+        height
+      }
       campaign
       characters{
         _id
@@ -359,6 +365,12 @@ export const onSessionUpdate = gql`
   subscription onSessionUpdate($id:String){
     sessionUpdate(id:$id){
       _id
+      dm
+      map{
+        name
+        width
+        height
+      }
       campaign
       characters{
         _id

@@ -5,6 +5,24 @@ const apiTD = require('./apiSchema')
 //unsure whether this works correctly with "!" on essential properties, or if better to just guarantee they are filled
 const typeDefs = gql`
     
+    type APIReference {
+        index: String
+        name: String
+        url: String
+    }
+
+    type User {
+        _id: ID!
+        name: String
+        email: String
+        username: String
+        password: String
+        permissions: Int
+        campaigns: [Campaign]
+        characters: [Character]
+        maps: [Map]
+    }
+
     type Character {
         _id: ID!
         user: User
@@ -31,36 +49,30 @@ const typeDefs = gql`
         dm: ID
         players: [ID]
         characters: [Character]
+        maps: [ID]
         currentSession: ID
     }
 
-    type APIReference {
-        index: String
+    type Map {
+        _id: ID!
+        creator: ID!
         name: String
-        url: String
+        width: Int
+        height: Int
     }
 
-    type User {
+    type Session {
         _id: ID!
-        name: String
-        email: String
-        username: String
-        password: String
-        permissions: Int
-        campaigns: [Campaign]
-        characters: [Character]
+        dm: ID
+        campaign: ID
+        map: Map
+        characters: [CharacterReference]
     }
 
     type CharacterReference {
         _id: ID!
         character: Character!
         position: Int!
-    }
-
-    type Session {
-        _id: ID!
-        campaign: ID
-        characters: [CharacterReference]
     }
 
     type Query {
@@ -75,6 +87,9 @@ const typeDefs = gql`
         players(campaign:String):[User]
         character(id:String): Character
         characters: [Character]
+        getCurrentSessionID(campaign:String): String
+        map(id:String): Map
+        session(id:String): Session
         classes: [Class]
         class(index:String): Class
         races: [Race]
@@ -82,8 +97,6 @@ const typeDefs = gql`
         equipmentCategories: [APIReference]
         equipment(id:String): Equipment
         abilityScores: [AbilityScore]
-        getCurrentSessionID(campaign:String): String
-        session(id:String):Session
     }
 
     type Mutation {
@@ -99,6 +112,9 @@ const typeDefs = gql`
         updateCharacterInfo(id:String, name:String, campaign:String):Character
         updateCharacterStats(id:String, class:String, level:Int, int:Int, str:Int, dex:Int, con:Int, wis:Int, cha:Int):Character
         updateCharacterSkills(id:String, skills:[String]):Character
+        createMap(creator: String, name:String, width: Int, height: Int): Map
+        deleteMap(user:String, map:String): String
+        changeMap(user:String, session:String, map:String):String
         createSession(campaign:String, user:String):Session
         endSession(campaign:String, user:String):String
         changeCharacterPos(session:String, character:String, position:Int):String

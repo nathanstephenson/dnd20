@@ -9,6 +9,7 @@ const userSchema = new Mongoose.Schema({
   permissions: Number,
   characters: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Character' }],
   campaigns: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Campaign' }],
+  maps: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Campaign' }],
 });
 
 const User = Mongoose.model('User', userSchema);
