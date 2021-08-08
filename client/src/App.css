@@ -3,6 +3,8 @@
   --bg-night: #33334d;
 
   --bg-primary: var(--bg-day);
+  --bg-secondary: var(--bg-night);
+
   --bg-navbar: #2d2d3e;
   --navTextColour: #e6e6e6;
   --transition-speed: 100ms ease;
