@@ -66,7 +66,7 @@ const resolvers = {
             return campaign.currentSession;
         },
         session(root, args, context){
-            return Session.findById(args.id).populate('characters.character')
+            return Session.findById(args.id).populate('characters.character').populate('map')
         },
         //---------------5eAPI queries, async because api returns promise
         async classes(root,args,{dataSources}){
