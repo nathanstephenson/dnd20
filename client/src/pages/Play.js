@@ -39,7 +39,7 @@ function PlayView(props){
                 console.log("loading")
             }
             if(queryData!==undefined){
-                console.log(queryData.session)
+                //console.log(queryData.session)
                 changeData(queryData.session)
             }
         }else{
